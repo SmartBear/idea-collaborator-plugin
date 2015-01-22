@@ -1,0 +1,1 @@
+SmartBear Collaborator IntelliJ Plugin
