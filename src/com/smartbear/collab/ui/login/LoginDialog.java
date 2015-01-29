@@ -47,6 +47,13 @@ public class LoginDialog extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    private boolean validateFields(){
+        boolean result = true;
+        if (!serverURLJL.isValid()){
+            result = false;
+        }
+        return result;
+    }
     private void onOK() {
 // add your code here
         dispose();
