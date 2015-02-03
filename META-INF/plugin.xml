@@ -1,5 +1,5 @@
 <idea-plugin version="2">
-  <id>com.smartbear.collaborator.plugin</id>
+  <id>com.smartbear.collab</id>
   <name>Smartbear Collaborator</name>
   <version>1.0</version>
   <vendor email="support@smartbear.com" url="http://www.smartbear.com">Smartbear</vendor>
@@ -45,7 +45,7 @@
         <add-to-group group-id="Smartbear.Collaborator" anchor="first"/>
       </action>
     </group-->
-    <action id="ServerLogin" class="com.smartbear.collab.ui.login.ServerLogin" text="Smartbear Login"
+    <action id="ServerLogin" class="com.smartbear.collab.ui.login.LoginDialog" text="Smartbear Login"
             description="Login to the server">
       <add-to-group group-id="VcsGroups" anchor="after" relative-to-action="Start.Use.Vcs"/>
     </action>
