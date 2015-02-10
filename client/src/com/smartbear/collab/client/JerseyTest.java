@@ -17,11 +17,10 @@ import java.util.List;
  */
 public class JerseyTest {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://localhost:8080").path("services/json/v1");
-//        WebTarget target = client.target("http://localhost:8080/services/json/v1");
 
         getLoginTicket jsonrpcMethod = new getLoginTicket("mzumbado", "");
 
@@ -31,16 +30,10 @@ public class JerseyTest {
         List<JsonrpcResult> results = new ArrayList<JsonrpcResult>();
 
         results = target.request(MediaType.APPLICATION_JSON_TYPE)
-                        .post(Entity.entity(methods, MediaType.APPLICATION_JSON_TYPE),
-                                List.class);
-/*
-        System.out.println(jsonStr.toString());
-        target.register(JacksonFeature.class);
-        String resultStr = target.request(MediaType.APPLICATION_JSON_TYPE)
-                        .post(Entity.entity(jsonStr.toString(), MediaType.APPLICATION_JSON_TYPE),
-                                String.class);
-*/
-        System.out.println("name = " + ((JsonrpcResult) results.get(0)) + " value = " );
+                .post(Entity.entity(methods, MediaType.APPLICATION_JSON_TYPE),
+                        List.class);
+
+        System.out.println("name = " + ((JsonrpcResult) results.get(0)) + " value = ");
 
     }
 
