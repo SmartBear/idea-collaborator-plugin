@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Created by mzumbado on 2/5/15.

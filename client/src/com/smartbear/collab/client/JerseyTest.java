@@ -1,8 +1,7 @@
 package com.smartbear.collab.client;
 
 import com.smartbear.collab.common.model.JsonrpcResult;
-import com.smartbear.collab.common.model.impl.Credentials;
-import com.smartbear.collab.common.model.impl.getLoginTicket;
+import com.smartbear.collab.common.model.impl.GetLoginTicket;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -22,9 +21,9 @@ public class JerseyTest {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target("http://localhost:8080").path("services/json/v1");
 
-        getLoginTicket jsonrpcMethod = new getLoginTicket("mzumbado", "");
+        GetLoginTicket jsonrpcMethod = new GetLoginTicket("mzumbado", "");
 
-        List<getLoginTicket> methods = new ArrayList<getLoginTicket>();
+        List<GetLoginTicket> methods = new ArrayList<GetLoginTicket>();
         methods.add(jsonrpcMethod);
 
         List<JsonrpcResult> results = new ArrayList<JsonrpcResult>();
@@ -33,7 +32,7 @@ public class JerseyTest {
                 .post(Entity.entity(methods, MediaType.APPLICATION_JSON_TYPE),
                         List.class);
 
-        System.out.println("name = " + ((JsonrpcResult) results.get(0)) + " value = ");
+        System.out.println("name = " + results.get(0) + " value = ");
 
     }
 
