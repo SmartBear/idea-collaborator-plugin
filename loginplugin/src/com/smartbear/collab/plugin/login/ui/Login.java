@@ -22,7 +22,8 @@ public class Login extends JDialog {
     private JButton proxyBttn;
 
     private Client client;
-    private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
+    private PropertiesComponent persistedProperties;
+//    private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
 
     public Login() {
         setContentPane(contentPane);
@@ -66,24 +67,30 @@ public class Login extends JDialog {
     }
 
     private void initializeValues(){
+/*        if (persistedProperties == null) {
+            persistedProperties = PropertiesComponent.getInstance();
+        }
         if (persistedProperties.getValues("recentServers").length > 0){
             for (String recentServer : persistedProperties.getValues("recentServers")){
                 serverCmb.addItem(recentServer);
             }
-        }
+        }*/
     }
 
     private boolean validateFields(){
         boolean result = true;
         if (result && (serverCmb == null || serverCmb.getSelectedItem().toString().isEmpty())){
-            JOptionPane.showMessageDialog(null, "Please select a server", "ERROR", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n" +
+                    "\n" +
+                    "Reason:\n" +
+                    "could not build URL", "Collaborator Error", JOptionPane.OK_OPTION);
             result = false;
         }
         else {
                 client = new Client(serverCmb.getSelectedItem().toString());
         }
         if (result && usernameTxt.getText().isEmpty()){
-            JOptionPane.showMessageDialog(null, "Enter the login name", "ERROR", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\nEnter a username", "Collaborator Error", JOptionPane.OK_OPTION);
             result = false;
         }
         else {
@@ -91,15 +98,24 @@ public class Login extends JDialog {
                 List<String> results = client.login(usernameTxt.getText(), passwordTxt.getPassword().toString());
             }
             catch (ServerURLException sue) {
-                JOptionPane.showMessageDialog(null, "Invalid server " + sue.getMessage(), "ERROR", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n" +
+                        "\n" +
+                        "Reason:\n" +
+                        "Connection refused:" + sue.getMessage(), "Collaborator Error", JOptionPane.OK_OPTION);
                 result = false;
             }
             catch (CredentialsException ce) {
-                JOptionPane.showMessageDialog(null, "Invalid credentials " + ce.getMessage(), "ERROR", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
+                                "\n" +
+                                "Reason:\n" +
+                                "Invalid username and or password.", "Collaborator Error", JOptionPane.OK_OPTION);
                 result = false;
             }
             catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Invalid general credentials " + e.getMessage(), "ERROR", JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
+                        "\n" +
+                        "Reason:\n" +
+                        "Connection refused:" + e.getMessage(), "Collaborator Error", JOptionPane.OK_OPTION);
                 result = false;
             }
         }
@@ -123,7 +139,7 @@ public class Login extends JDialog {
 
     private void onTest() {
         if (validateFields()){
-            JOptionPane.showMessageDialog(null, "Connection sucessful", "SUCESS", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator Server", "Test", JOptionPane.OK_OPTION);
         }
     }
 
