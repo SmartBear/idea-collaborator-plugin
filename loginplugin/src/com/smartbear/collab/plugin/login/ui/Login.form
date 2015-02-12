@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.smartbear.collab.ui.login.LoginDialog">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.smartbear.collab.plugin.login.ui.Login">
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="1156" height="318"/>
+      <xy x="48" y="54" width="436" height="335"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -49,7 +49,7 @@
           </grid>
         </children>
       </grid>
-      <grid id="e3588" layout-manager="GridLayoutManager" row-count="9" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="e3588" layout-manager="GridLayoutManager" row-count="9" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -57,64 +57,81 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="7444e" class="javax.swing.JLabel" binding="descriptionL">
+          <component id="c9c64" class="javax.swing.JLabel">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Enter Collaborator Server URL and credentials"/>
+              <text value="Enter the credentials"/>
             </properties>
           </component>
-          <component id="8e2b4" class="javax.swing.JLabel" binding="serverURLJL">
+          <vspacer id="f179a">
+            <constraints>
+              <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </vspacer>
+          <component id="4b493" class="javax.swing.JSeparator">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="fbca8" class="javax.swing.JLabel">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <horizontalTextPosition value="2"/>
-              <text value="Server URL:"/>
+              <text value="Server:"/>
             </properties>
           </component>
-          <component id="535fc" class="javax.swing.JLabel" binding="usernameJL">
+          <component id="7278d" class="javax.swing.JSeparator">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="af3f9" class="javax.swing.JButton" binding="testBttn">
+            <constraints>
+              <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Test"/>
+            </properties>
+          </component>
+          <component id="27ff0" class="javax.swing.JComboBox" binding="serverCmb">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <editable value="true"/>
+              <model/>
+            </properties>
+          </component>
+          <component id="169aa" class="javax.swing.JTextField" binding="usernameTxt">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="1b11d" class="javax.swing.JLabel">
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <horizontalAlignment value="2"/>
-              <horizontalTextPosition value="10"/>
-              <labelFor value="aa618"/>
               <text value="Username:"/>
             </properties>
           </component>
-          <component id="910b8" class="javax.swing.JComboBox" binding="serverURL" custom-create="true">
+          <component id="218a7" class="javax.swing.JPasswordField" binding="passwordTxt">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="9" use-parent-layout="false">
-                <preferred-size width="245" height="-1"/>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
-            <properties>
-              <editable value="true"/>
-            </properties>
+            <properties/>
           </component>
-          <component id="d448b" class="javax.swing.JTextField" binding="username">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="9" use-parent-layout="false">
-                <preferred-size width="245" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <horizontalAlignment value="4"/>
-            </properties>
-          </component>
-          <component id="e3b5" class="javax.swing.JButton" binding="testBtn">
-            <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <horizontalAlignment value="2"/>
-              <text value="Test Connection"/>
-            </properties>
-          </component>
-          <component id="d8aac" class="javax.swing.JLabel">
+          <component id="db0bf" class="javax.swing.JLabel">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -122,43 +139,22 @@
               <text value="Password:"/>
             </properties>
           </component>
-          <component id="aa618" class="javax.swing.JPasswordField" binding="password">
+          <component id="94153" class="javax.swing.JButton" binding="proxyBttn">
             <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="9" use-parent-layout="false">
-                <preferred-size width="245" height="-1"/>
-              </grid>
+              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <enabled value="false"/>
+              <text value="Proxy"/>
+            </properties>
           </component>
-          <component id="92251" class="javax.swing.JCheckBox" binding="useProxy">
+          <component id="16645" class="javax.swing.JCheckBox" binding="proxyChck">
             <constraints>
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Use Proxy"/>
-              <verticalTextPosition value="1"/>
+              <text value="Proxy:"/>
             </properties>
-          </component>
-          <component id="eb76b" class="javax.swing.JButton" binding="button1" default-binding="true">
-            <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="10" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <enabled value="false"/>
-              <text value="Proxy settings"/>
-            </properties>
-          </component>
-          <component id="1a8c1" class="javax.swing.JSeparator">
-            <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="37693" class="javax.swing.JSeparator">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
           </component>
         </children>
       </grid>

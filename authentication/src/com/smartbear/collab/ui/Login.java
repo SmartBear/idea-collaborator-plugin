@@ -1,20 +1,19 @@
-package com.smartbear.collab.ui.login;
+package com.smartbear.collab.ui;
 
 import javax.swing.*;
 import java.awt.event.*;
 
-public class LoginDialog extends JDialog {
+public class Login extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JLabel descriptionL;
-    private JLabel serverURLJL;
-    private JLabel usernameJL;
-    private JLabel setUpProxyL;
-    private JButton buttonApply;
-    private JLabel networkConnectionsL;
+    private JComboBox server;
+    private JTextField username;
+    private JCheckBox useProxyCheckBox;
+    private JButton proxyButton;
+    private JTextField password;
 
-    public LoginDialog() {
+    public Login() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -49,11 +48,12 @@ public class LoginDialog extends JDialog {
 
     private boolean validateFields(){
         boolean result = true;
-        if (!serverURLJL.isValid()){
+        if (username.getText().isEmpty()){
             result = false;
         }
         return result;
     }
+
     private void onOK() {
 // add your code here
         dispose();
@@ -65,7 +65,7 @@ public class LoginDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        LoginDialog dialog = new LoginDialog();
+        Login dialog = new Login();
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);

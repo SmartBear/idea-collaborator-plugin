@@ -1,8 +1,8 @@
 <idea-plugin version="2">
-  <id>com.smartbear.collaborator.plugin</id>
-  <name>Smartbear Collaborator</name>
+  <id>com.yourcompany.unique.plugin.id</id>
+  <name>Plugin display name here</name>
   <version>1.0</version>
-  <vendor email="support@smartbear.com" url="http://www.smartbear.com">Smartbear</vendor>
+  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
   <description><![CDATA[
       Enter short description for your plugin here.<br>
@@ -38,17 +38,15 @@
 
   <actions>
     <!-- Add your actions here -->
-    <!--group id="Smartbear.Collaborator" text="Smartbear Collaborator">
-      <add-to-group group-id="VcsGroups" anchor="last" />
-      <action id="CollabGroup" class="com.smartbear.collab.CollabGroup" text="Login to server..."
-              description="Login to Smartbear server">
-        <add-to-group group-id="Smartbear.Collaborator" anchor="first"/>
+      <action id="LoginActn" class="com.smartbear.collab.plugin.login.LoginActn" text="ServerLogin"
+              description="Login to server">
+          <add-to-group group-id="VcsGroups" anchor="after" relative-to-action="Start.Use.Vcs"/>
       </action>
-    </group-->
-    <action id="ServerLogin" class="com.smartbear.collab.ui.login.ServerLogin" text="Smartbear Login"
-            description="Login to the server">
-      <add-to-group group-id="VcsGroups" anchor="after" relative-to-action="Start.Use.Vcs"/>
-    </action>
   </actions>
 
+    <module-components>
+        <component>
+            <implementation-class>com.smartbear.collab.plugin.login.statecmpnt</implementation-class>
+        </component>
+    </module-components>
 </idea-plugin>
