@@ -2,6 +2,7 @@ package com.smartbear.collab.plugin.login.ui;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.intellij.ide.util.PropertiesComponent;
@@ -9,6 +10,7 @@ import com.smartbear.collab.client.Client;
 import com.smartbear.collab.client.exception.ClientException;
 import com.smartbear.collab.client.exception.CredentialsException;
 import com.smartbear.collab.client.exception.ServerURLException;
+import com.smartbear.collab.common.model.JsonrpcCommandResponse;
 
 public class Login extends JDialog {
     private JPanel contentPane;
@@ -18,12 +20,14 @@ public class Login extends JDialog {
     private JComboBox serverCmb;
     private JTextField usernameTxt;
     private JPasswordField passwordTxt;
+    private String loginTicket = "";
+    private List<String> recentServers = new ArrayList<String>();
     private JCheckBox proxyChck;
     private JButton proxyBttn;
 
     private Client client;
-    private PropertiesComponent persistedProperties;
-//    private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
+//    private PropertiesComponent persistedProperties;
+    private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
 
     public Login() {
         setContentPane(contentPane);
@@ -67,14 +71,13 @@ public class Login extends JDialog {
     }
 
     private void initializeValues(){
-/*        if (persistedProperties == null) {
-            persistedProperties = PropertiesComponent.getInstance();
-        }
-        if (persistedProperties.getValues("recentServers").length > 0){
+        if (persistedProperties.getValues("recentServers") != null){
             for (String recentServer : persistedProperties.getValues("recentServers")){
-                serverCmb.addItem(recentServer);
+                if (recentServer != null && recentServer.compareTo("null") != 0){
+                    serverCmb.addItem(recentServer);
+                }
             }
-        }*/
+        }
     }
 
     private boolean validateFields(){
@@ -94,8 +97,9 @@ public class Login extends JDialog {
             result = false;
         }
         else {
+            JsonrpcCommandResponse response = null;
             try {
-                List<String> results = client.login(usernameTxt.getText(), passwordTxt.getPassword().toString());
+                response = client.login(usernameTxt.getText(), new String(passwordTxt.getPassword()));
             }
             catch (ServerURLException sue) {
                 JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n" +
@@ -118,6 +122,16 @@ public class Login extends JDialog {
                         "Connection refused:" + e.getMessage(), "Collaborator Error", JOptionPane.OK_OPTION);
                 result = false;
             }
+            if (response.getErrors() != null && !response.getErrors().isEmpty()){
+                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
+                        "\n" +
+                        "Reason:\n" +
+                        response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.OK_OPTION);
+                result = false;
+            }
+            else if (response.getResult() != null){
+                loginTicket = response.getResult().getValue();
+            }
         }
 
         return result;
@@ -126,13 +140,14 @@ public class Login extends JDialog {
     private void onOK() {
         if (validateFields()) {
             persistedProperties.setValue("username", usernameTxt.getText());
-            persistedProperties.setValue("password", passwordTxt.getText());
-            String[] recentServers = new String[10];
-            for (int index = 0; index >= serverCmb.getItemCount(); index++){
-                recentServers[index] = serverCmb.getSelectedItem().toString();
+            persistedProperties.setValue("password", new String(passwordTxt.getPassword()));
+            if (!recentServers.contains(serverCmb.getSelectedItem().toString())){
+                recentServers.add(serverCmb.getSelectedItem().toString());
             }
-            persistedProperties.setValues("servers", recentServers);
-            persistedProperties.setValue("ticketId", "123");
+            String[] persistedRecentServers = new String[10];
+            persistedRecentServers = recentServers.toArray(persistedRecentServers);
+            persistedProperties.setValues("recentServers", persistedRecentServers);
+            persistedProperties.setValue("ticketId", loginTicket);
             dispose();
         }
     }

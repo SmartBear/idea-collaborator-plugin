@@ -10,25 +10,25 @@ import java.io.Serializable;
  */
 @JsonRootName("result")
 public class JsonrpcResult implements Serializable{
-    @JsonProperty("name")
-    private String result;
-    @JsonProperty("errors")
-    private String errors;
 
-    public String getResult() {
-        return result;
+    @JsonProperty("command")
+    private String command;
+    @JsonProperty("value")
+    private String value;
+
+    public String getCommand() {
+        return command;
     }
 
-    public void setResult(String result) {
-        this.result = result;
+    public void setCommand(String command) {
+        this.command = command;
     }
 
-    public String getErrors() {
-        return errors;
+    public String getValue() {
+        return value;
     }
 
-    public void setErrors(String errors) {
-        this.errors = errors;
+    public void setValue(String value) {
+        this.value = value;
     }
-
 }

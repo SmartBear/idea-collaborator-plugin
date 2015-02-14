@@ -10,6 +10,7 @@ import com.smartbear.collab.plugin.login.ui.Login;
 public class LoginActn extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Login login = new Login();
+        login.pack();
         login.setVisible(true);
     }
 }

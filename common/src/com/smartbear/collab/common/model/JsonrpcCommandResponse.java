@@ -11,16 +11,27 @@ import java.util.List;
  * Created by mzumbado on 2/12/15.
  */
 
-public class JsonrpcCommandResponse implements Serializable {
+public class JsonrpcCommandResponse {
 
     @JsonProperty("result")
-    private LinkedHashMap<String, LinkedHashMap<String, String>> result;
+    private JsonrpcResult result;
 
-    public LinkedHashMap<String, LinkedHashMap<String, String>> getResult() {
+    @JsonProperty("errors")
+    private List<JsonrpcError> errors;
+
+    public JsonrpcResult getResult() {
         return result;
     }
 
-    public void setResult(LinkedHashMap<String, LinkedHashMap<String, String>> result) {
+    public void setResult(JsonrpcResult result) {
         this.result = result;
+    }
+
+    public List<JsonrpcError> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<JsonrpcError> errors) {
+        this.errors = errors;
     }
 }

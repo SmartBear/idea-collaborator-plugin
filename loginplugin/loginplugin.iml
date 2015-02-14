@@ -11,5 +11,6 @@
     <orderEntry type="jdk" jdkName="IDEA IC-139.659.2" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="client" />
+    <orderEntry type="module" module-name="common" />
   </component>
 </module>
