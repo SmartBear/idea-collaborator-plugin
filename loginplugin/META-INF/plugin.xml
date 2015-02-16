@@ -38,9 +38,12 @@
 
   <actions>
     <!-- Add your actions here -->
-      <action id="LoginActn" class="com.smartbear.collab.plugin.login.LoginActn" text="Smartbear Login"
-              description="Login to server">
+      <group id="smartbearGroup" text="Smartbear Collaborator" keep-content="true" >
           <add-to-group group-id="VcsGroups" anchor="after" relative-to-action="Start.Use.Vcs"/>
+      </group>
+      <action id="LoginActn" class="com.smartbear.collab.plugin.login.LoginActn" text="Server Login"
+              description="Login to server">
+          <add-to-group group-id="smartbearGroup" anchor="first"/>
       </action>
   </actions>
 

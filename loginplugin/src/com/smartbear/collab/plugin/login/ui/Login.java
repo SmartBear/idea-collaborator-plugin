@@ -11,6 +11,7 @@ import com.smartbear.collab.client.exception.ClientException;
 import com.smartbear.collab.client.exception.CredentialsException;
 import com.smartbear.collab.client.exception.ServerURLException;
 import com.smartbear.collab.common.model.JsonrpcCommandResponse;
+import com.smartbear.collab.common.model.CollabConstants;
 
 public class Login extends JDialog {
     private JPanel contentPane;
@@ -26,8 +27,9 @@ public class Login extends JDialog {
     private JButton proxyBttn;
 
     private Client client;
-//    private PropertiesComponent persistedProperties;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
+
+    private static final int RECENT_SERVERS_SIZE = 10;
 
     public Login() {
         setContentPane(contentPane);
@@ -71,12 +73,15 @@ public class Login extends JDialog {
     }
 
     private void initializeValues(){
-        if (persistedProperties.getValues("recentServers") != null){
-            for (String recentServer : persistedProperties.getValues("recentServers")){
+        if (persistedProperties.getValues(CollabConstants.PROPERTY_RECENT_SERVERS) != null){
+            for (String recentServer : persistedProperties.getValues(CollabConstants.PROPERTY_RECENT_SERVERS)){
                 if (recentServer != null && recentServer.compareTo("null") != 0){
                     serverCmb.addItem(recentServer);
                 }
             }
+        }
+        if (persistedProperties.getValues(CollabConstants.PROPERTY_USERNAME) != null){
+            usernameTxt.setText(persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME));
         }
     }
 
@@ -139,22 +144,39 @@ public class Login extends JDialog {
 
     private void onOK() {
         if (validateFields()) {
-            persistedProperties.setValue("username", usernameTxt.getText());
-            persistedProperties.setValue("password", new String(passwordTxt.getPassword()));
-            if (!recentServers.contains(serverCmb.getSelectedItem().toString())){
-                recentServers.add(serverCmb.getSelectedItem().toString());
-            }
-            String[] persistedRecentServers = new String[10];
-            persistedRecentServers = recentServers.toArray(persistedRecentServers);
-            persistedProperties.setValues("recentServers", persistedRecentServers);
-            persistedProperties.setValue("ticketId", loginTicket);
+            persistValues();
             dispose();
         }
     }
 
+    private void persistValues(){
+        persistedProperties.setValue(CollabConstants.PROPERTY_USERNAME, usernameTxt.getText());
+//            persistedProperties.setValue("password", new String(passwordTxt.getPassword()));
+        if (recentServers.contains(serverCmb.getSelectedItem().toString())){
+            // if the server exists in the list
+            if (recentServers.indexOf(serverCmb.getSelectedItem().toString()) != 0){
+                // and the element is not the first in the list, the element is removed
+                // in the next "if" it will be added to the beginning of the list
+                recentServers.remove(serverCmb.getSelectedItem().toString());
+            }
+        }
+        if (!recentServers.contains(serverCmb.getSelectedItem().toString())){
+            // the server is added as the most recent
+            recentServers.add(0,serverCmb.getSelectedItem().toString());
+        }
+        if (recentServers.size() > RECENT_SERVERS_SIZE){
+            // keeps the recent servers up to N elements
+            recentServers.remove(RECENT_SERVERS_SIZE);
+        }
+        String[] persistedRecentServers = new String[RECENT_SERVERS_SIZE];
+        persistedRecentServers = recentServers.toArray(persistedRecentServers);
+        persistedProperties.setValues(CollabConstants.PROPERTY_RECENT_SERVERS, persistedRecentServers);
+        persistedProperties.setValue(CollabConstants.PROPERTY_TICKET_ID, loginTicket);
+    }
+
     private void onTest() {
         if (validateFields()){
-            JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator Server", "Test", JOptionPane.OK_OPTION, Icon.);
+            JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator Server", "Test", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
