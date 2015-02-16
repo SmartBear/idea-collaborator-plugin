@@ -1,11 +1,11 @@
 <idea-plugin version="2">
-  <id>com.yourcompany.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <id>com.smartbear.collab.plugin</id>
+  <name>Smartbear Collaborator</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="support@yourcompany.com" url="http://www.smartbear.com">Smartbear</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
+      Smartbear Collaborator code reviews plugin.<br>
       <em>most HTML tags may be used</em>
     ]]></description>
 
@@ -38,15 +38,15 @@
 
   <actions>
     <!-- Add your actions here -->
-      <action id="LoginActn" class="com.smartbear.collab.plugin.login.LoginActn" text="ServerLogin"
+      <action id="LoginActn" class="com.smartbear.collab.plugin.login.LoginActn" text="Smartbear Login"
               description="Login to server">
           <add-to-group group-id="VcsGroups" anchor="after" relative-to-action="Start.Use.Vcs"/>
       </action>
   </actions>
 
-    <module-components>
+    <!--module-components>
         <component>
             <implementation-class>com.smartbear.collab.plugin.login.statecmpnt</implementation-class>
         </component>
-    </module-components>
+    </module-components-->
 </idea-plugin>

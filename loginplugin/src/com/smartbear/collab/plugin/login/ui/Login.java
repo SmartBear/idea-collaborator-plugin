@@ -154,7 +154,7 @@ public class Login extends JDialog {
 
     private void onTest() {
         if (validateFields()){
-            JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator Server", "Test", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator Server", "Test", JOptionPane.OK_OPTION, Icon.);
         }
     }
 
