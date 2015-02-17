@@ -1,17 +1,17 @@
 <idea-plugin version="2">
   <id>com.smartbear.collab.plugin</id>
   <name>Smartbear Collaborator</name>
-  <version>1.0</version>
+  <version>0.1</version>
   <vendor email="support@yourcompany.com" url="http://www.smartbear.com">Smartbear</vendor>
 
   <description><![CDATA[
       Smartbear Collaborator code reviews plugin.<br>
-      <em>most HTML tags may be used</em>
+      <!--em>most HTML tags may be used</em-->
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      New Smartbear Collaborator menu added.<br>
+      <!--em>most HTML tags may be used</em-->
     ]]>
   </change-notes>
 
@@ -44,6 +44,10 @@
                   description="Login to server">
           </action>
       </group>
+      <action id="reviewFromGitHistory" class="com.smartbear.collab.plugin.review.ReviewFromGitHistory"
+              text="Add to review" description="Add to Smartbear Collaborator Review">
+          <add-to-group group-id="GitFileActions" anchor="last"/>
+      </action>
   </actions>
 
     <!--module-components>
