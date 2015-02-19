@@ -22,6 +22,7 @@ public class AddCommitsToReview extends JDialog {
     private JTextField titleTxt;
     private JButton refreshReviewsBttn;
     private JList existingReviewsLst;
+    private ButtonGroup radioButtons = new ButtonGroup();
 
     private Client client;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
@@ -43,14 +44,46 @@ public class AddCommitsToReview extends JDialog {
             }
         });
 
+        refreshReviewsBttn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                refreshReviews();
+            }
+        });
+
+        radioButtons.add(createNewReviewRdBttn);
+        radioButtons.add(addToExistingReviewRdBttn);
+
         addToExistingReviewRdBttn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (addToExistingReviewRdBttn.isSelected()) {
-                    getExistingReviews();
-                } else {
-                    ((DefaultListModel) existingReviewsLst.getModel()).removeAllElements();
-
+                if (addToExistingReviewRdBttn.isSelected()){
+                    refreshReviewsBttn.setEnabled(true);
+                    existingReviewsLst.setEnabled(true);
+                    titleTxt.setEnabled(false);
+                    refreshReviewsBttn.doClick();
                 }
+                else {
+                    refreshReviewsBttn.setEnabled(false);
+                    existingReviewsLst.setEnabled(false);
+                    titleTxt.setEnabled(false);
+                }
+
+            }
+        });
+
+        createNewReviewRdBttn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (createNewReviewRdBttn.isSelected()){
+                    refreshReviewsBttn.setEnabled(false);
+                    existingReviewsLst.setEnabled(false);
+                    titleTxt.setEnabled(false);
+                }
+                else {
+                    refreshReviewsBttn.setEnabled(true);
+                    existingReviewsLst.setEnabled(true);
+                    titleTxt.setEnabled(false);
+                    refreshReviewsBttn.doClick();
+                }
+
             }
         });
 
@@ -80,7 +113,7 @@ public class AddCommitsToReview extends JDialog {
         dispose();
     }
 
-    private void getExistingReviews(){
+    private void refreshReviews(){
         String username = (String)persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
         if (username == null || username.isEmpty()){
             JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\nEnter a username", "Collaborator Error", JOptionPane.OK_OPTION);
@@ -92,16 +125,30 @@ public class AddCommitsToReview extends JDialog {
             dispose();
         }
         try {
+            client = new Client("http://localhost:8080");
+
             JsonrpcCommandResponse actionItems = client.getActionItems(username, ticketId);
-            java.util.List<String> aitems = (java.util.List)actionItems.getResult().getValue();
-            List cList = new List();
-            for (String item : aitems){
-                cList.add(item);
+            java.util.List<LinkedHashMap<String, String>> aitems = (java.util.List)actionItems.getResult().getValue();
+//            List cList = new List();
+            DefaultListModel dlm = new DefaultListModel();
+            for (LinkedHashMap<String, String> item : aitems){
+                dlm.addElement(item.get("text").substring(item.get("text").indexOf("Review #")));
+//                cList.add(item.get("text"));
             }
-            existingReviewsLst.add(cList);
+//            existingReviewsLst.add(cList)
+            existingReviewsLst.setModel(dlm);
         }
         catch (Exception e){
 
+        }
+    }
+
+    private void onAddToExistingReview(){
+        if (addToExistingReviewRdBttn.isSelected()) {
+            this.refreshReviews();
+        } else {
+            DefaultListModel defaultListModel = (DefaultListModel) existingReviewsLst.getModel();
+            defaultListModel.removeAllElements();
         }
     }
 

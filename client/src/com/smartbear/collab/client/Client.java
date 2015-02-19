@@ -114,7 +114,7 @@ public class Client {
 
             JsonrpcResponse response = sendRequest(methods);
             result = response.getResults().get(0);
-            if (result.getErrors().size() > 0){
+            if (result.getErrors() != null && result.getErrors().size() > 0){
                 throw new ServerURLException("Server communication error.");
             }
             result = response.getResults().get(1);
