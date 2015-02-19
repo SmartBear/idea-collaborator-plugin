@@ -135,7 +135,7 @@ public class Login extends JDialog {
                 result = false;
             }
             else if (response.getResult() != null){
-                loginTicket = response.getResult().getValue();
+                loginTicket = (String)response.getResult().getValue();
             }
         }
 

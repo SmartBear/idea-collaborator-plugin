@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class ReviewFromGitHistory extends AnAction {
     public void actionPerformed(AnActionEvent e) {
-        // TODO: insert action logic here
-    }
+        AddCommitsToReview dialog = new AddCommitsToReview();
+        dialog.pack();
+        dialog.setVisible(true);    }
 }

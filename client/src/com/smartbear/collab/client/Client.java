@@ -4,7 +4,9 @@ import com.smartbear.collab.client.exception.ClientException;
 import com.smartbear.collab.client.exception.CredentialsException;
 import com.smartbear.collab.client.exception.ServerURLException;
 import com.smartbear.collab.common.model.*;
+import com.smartbear.collab.common.model.impl.Authenticate;
 import com.smartbear.collab.common.model.impl.Credentials;
+import com.smartbear.collab.common.model.impl.GetActionItems;
 import com.smartbear.collab.common.model.impl.GetLoginTicket;
 
 import javax.ws.rs.NotFoundException;
@@ -44,9 +46,11 @@ public class Client {
             if (commandResultMap.get("result") != null){
                 JsonrpcResult commandResult = new JsonrpcResult();
                 LinkedHashMap<String, String> commandResultValue = (LinkedHashMap<String,String>)commandResultMap.get("result");
-                commandResult.setCommand(commandResultValue.keySet().iterator().next());
-                commandResult.setValue(commandResultValue.get(commandResult.getCommand()));
-                commandResponse.setResult(commandResult);
+                if (commandResultValue.size() > 0) {
+                    commandResult.setCommand(commandResultValue.keySet().iterator().next());
+                    commandResult.setValue(commandResultValue.get(commandResult.getCommand()));
+                    commandResponse.setResult(commandResult);
+                }
             }
             if (commandResultMap.get("errors") != null){
                 List<LinkedHashMap<String,String>> errors = (List<LinkedHashMap<String,String>>)commandResultMap.get("errors");
@@ -77,6 +81,43 @@ public class Client {
 
             JsonrpcResponse response = sendRequest(methods);
             result = response.getResults().get(0);
+
+        }
+        catch (IllegalArgumentException iae) {
+            throw new ServerURLException(iae.getMessage());
+        }
+        catch (ProcessingException pe) {
+            if (pe.getCause().getClass().equals(ConnectException.class)){
+                throw new ServerURLException(pe.getCause().getMessage());
+            }
+            else {
+                throw new ServerURLException(pe.getMessage());
+            }
+        }
+        catch (NotFoundException nfe) {
+            throw new ServerURLException(nfe.getMessage());
+        }
+        catch (Exception e){
+            throw new CredentialsException(e.getMessage());
+        }
+        return result;
+    }
+
+    public JsonrpcCommandResponse getActionItems(String username, String ticketId) throws ServerURLException, CredentialsException, Exception{
+
+        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+
+        List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
+        methods.add(new Authenticate(username, ticketId));
+        methods.add(new GetActionItems());
+        try {
+
+            JsonrpcResponse response = sendRequest(methods);
+            result = response.getResults().get(0);
+            if (result.getErrors().size() > 0){
+                throw new ServerURLException("Server communication error.");
+            }
+            result = response.getResults().get(1);
 
         }
         catch (IllegalArgumentException iae) {

@@ -14,7 +14,7 @@ public class JsonrpcResult implements Serializable{
     @JsonProperty("command")
     private String command;
     @JsonProperty("value")
-    private String value;
+    private Object value;
 
     public String getCommand() {
         return command;
@@ -24,11 +24,11 @@ public class JsonrpcResult implements Serializable{
         this.command = command;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 }
