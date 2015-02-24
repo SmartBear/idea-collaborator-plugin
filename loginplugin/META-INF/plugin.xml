@@ -46,7 +46,7 @@
       </group>
       <action id="reviewFromGitHistory" class="com.smartbear.collab.plugin.review.ReviewFromGitHistory"
               text="Add to review" description="Add to Smartbear Collaborator Review">
-          <add-to-group group-id="GitFileActions" anchor="last"/>
+          <add-to-group group-id="VcsHistoryActionsGroup" anchor="last"/>
       </action>
   </actions>
 

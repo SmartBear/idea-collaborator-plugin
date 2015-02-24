@@ -1,6 +1,8 @@
 package com.smartbear.collab.plugin.review;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.vcs.history.VcsFileRevision;
+import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.smartbear.collab.client.Client;
 import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.JsonrpcCommandResponse;
@@ -27,10 +29,12 @@ public class AddCommitsToReview extends JDialog {
     private Client client;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
 
-    public AddCommitsToReview() {
+    public AddCommitsToReview(VcsFileRevision[] revisions) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
+
+        initTextTitle(revisions);
 
         cancelBttn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -103,6 +107,25 @@ public class AddCommitsToReview extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    private void initTextTitle(VcsFileRevision[] revisions){
+        String textTitle = "";
+        if (revisions.length == 1){
+            textTitle = revisions[0].getRevisionNumber() + " - " + revisions[0].getCommitMessage();
+        }
+        else {
+            for (int idx = 0; idx < revisions.length; idx++){
+                if (idx > 0 && idx < revisions.length - 1){
+                    textTitle = textTitle.concat(",");
+                }
+                else if (idx == revisions.length - 1){
+                    textTitle = textTitle.concat(" and ");
+                }
+                textTitle = textTitle.concat(revisions[idx].getRevisionNumber().asString());
+            }
+        }
+        titleTxt.setText(textTitle);
+    }
+
     private void onFinish() {
 // add your code here
         dispose();
@@ -151,11 +174,11 @@ public class AddCommitsToReview extends JDialog {
             defaultListModel.removeAllElements();
         }
     }
-
+/*
     public static void main(String[] args) {
         AddCommitsToReview dialog = new AddCommitsToReview();
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
-    }
+    }*/
 }
