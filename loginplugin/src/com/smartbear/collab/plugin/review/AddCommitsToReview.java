@@ -6,12 +6,17 @@ import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.smartbear.collab.client.Client;
 import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.JsonrpcCommandResponse;
+import com.smartbear.collab.common.model.impl.ChangeList;
+import com.smartbear.collab.common.model.impl.ScmToken;
+import com.smartbear.collab.util.ChangeListUtils;
 import git4idea.vfs.GitFileRevision;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.List;
 import java.awt.event.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class AddCommitsToReview extends JDialog {
@@ -29,12 +34,14 @@ public class AddCommitsToReview extends JDialog {
 
     private Client client;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
+    private VcsFileRevision[] revisions;
 
     public AddCommitsToReview(VcsFileRevision[] revisions) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
 
+        this.revisions = revisions;
         initializeClient();
         initTextTitle(revisions);
 
@@ -127,7 +134,6 @@ public class AddCommitsToReview extends JDialog {
     private void initTextTitle(VcsFileRevision[] revisions){
         String textTitle = "";
         if (revisions.length == 1){
-            GitFileRevision gfr = (GitFileRevision)revisions[0];
             textTitle = revisions[0].getRevisionNumber() + " - " + revisions[0].getCommitMessage();
         }
         else {
@@ -146,6 +152,15 @@ public class AddCommitsToReview extends JDialog {
 
     private void onFinish() {
         String reviewId = "";
+
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        }
+        catch (NoSuchAlgorithmException nsae){}
+
+        java.util.List<ChangeList> changeLists =ChangeListUtils.VcsFileRevisionToChangeList(ScmToken.GIT, this.revisions);
+        
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){
 
