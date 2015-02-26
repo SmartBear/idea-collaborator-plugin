@@ -163,6 +163,7 @@ public class Login extends JDialog {
         if (!recentServers.contains(serverCmb.getSelectedItem().toString())){
             // the server is added as the most recent
             recentServers.add(0,serverCmb.getSelectedItem().toString());
+            persistedProperties.setValue(CollabConstants.PROPERTY_SELECTED_SERVER, serverCmb.getSelectedItem().toString());
         }
         if (recentServers.size() > RECENT_SERVERS_SIZE){
             // keeps the recent servers up to N elements

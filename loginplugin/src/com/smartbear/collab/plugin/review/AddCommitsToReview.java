@@ -6,6 +6,7 @@ import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.smartbear.collab.client.Client;
 import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.JsonrpcCommandResponse;
+import git4idea.vfs.GitFileRevision;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,6 +35,7 @@ public class AddCommitsToReview extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
 
+        initializeClient();
         initTextTitle(revisions);
 
         cancelBttn.addActionListener(new ActionListener() {
@@ -107,9 +109,25 @@ public class AddCommitsToReview extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    private void initializeClient(){
+        String serverURL = persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER);
+        client = new Client(serverURL);
+        if (!client.hasCredentials()){
+            String username = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
+            if (!username.isEmpty()){
+                client.setUsername(username);
+            }
+            String ticketId = persistedProperties.getValue(CollabConstants.PROPERTY_TICKET_ID);
+            if (!ticketId.isEmpty()){
+                client.setTicketId(ticketId);
+            }
+        }
+    }
+
     private void initTextTitle(VcsFileRevision[] revisions){
         String textTitle = "";
         if (revisions.length == 1){
+            GitFileRevision gfr = (GitFileRevision)revisions[0];
             textTitle = revisions[0].getRevisionNumber() + " - " + revisions[0].getCommitMessage();
         }
         else {
@@ -127,12 +145,45 @@ public class AddCommitsToReview extends JDialog {
     }
 
     private void onFinish() {
-// add your code here
-        dispose();
+        String reviewId = "";
+        if (createNewReviewRdBttn.isSelected()){
+            if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){
+
+            }
+            else {
+                String creator = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
+                try {
+                    JsonrpcCommandResponse response = client.createReview(creator, titleTxt.getText());
+
+                }
+                catch (Exception e){
+
+                }
+            }
+        }
+        else if (addToExistingReviewRdBttn.isSelected()){
+
+        }
+        if (!reviewId.isEmpty()){
+
+            dispose();
+        }
+    }
+
+    private String getReviewTitle(){
+        String result = "";
+        if (createNewReviewRdBttn.isSelected()){
+            if (titleTxt.getText().isEmpty()){
+                JOptionPane.showMessageDialog(null, "Must provide a title for the review", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                result = titleTxt.getText();
+            }
+        }
+        return result;
     }
 
     private void onCancel() {
-// add your code here if necessary
         dispose();
     }
 
@@ -148,9 +199,9 @@ public class AddCommitsToReview extends JDialog {
             dispose();
         }
         try {
-            client = new Client("http://localhost:8080");
 
-            JsonrpcCommandResponse actionItems = client.getActionItems(username, ticketId);
+
+            JsonrpcCommandResponse actionItems = client.getActionItems();
             java.util.List<LinkedHashMap<String, String>> aitems = (java.util.List)actionItems.getResult().getValue();
 //            List cList = new List();
             DefaultListModel dlm = new DefaultListModel();

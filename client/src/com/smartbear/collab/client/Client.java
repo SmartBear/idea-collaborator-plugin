@@ -4,10 +4,7 @@ import com.smartbear.collab.client.exception.ClientException;
 import com.smartbear.collab.client.exception.CredentialsException;
 import com.smartbear.collab.client.exception.ServerURLException;
 import com.smartbear.collab.common.model.*;
-import com.smartbear.collab.common.model.impl.Authenticate;
-import com.smartbear.collab.common.model.impl.Credentials;
-import com.smartbear.collab.common.model.impl.GetActionItems;
-import com.smartbear.collab.common.model.impl.GetLoginTicket;
+import com.smartbear.collab.common.model.impl.*;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
@@ -25,10 +22,25 @@ import java.util.List;
  */
 public class Client {
     static WebTarget target;
+    private String username;
+    private String ticketId;
 
     public Client(String URLStr) {
         javax.ws.rs.client.Client client = ClientBuilder.newClient();
         this.target = client.target(URLStr).path("services/json/v1");
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public boolean hasCredentials(){
+        return ((username != null && !username.isEmpty() && (ticketId != null && !ticketId.isEmpty())));
+
     }
 
     public JsonrpcResponse sendRequest(List<JsonrpcCommand> methods){
@@ -64,6 +76,7 @@ public class Client {
                 commandResponse.setErrors(jsonrpcErrors);
 
             }
+
             commandResponses.add(commandResponse);
         }
         result.setResults(commandResponses);
@@ -100,16 +113,55 @@ public class Client {
         catch (Exception e){
             throw new CredentialsException(e.getMessage());
         }
+        this.username = username;
+        this.ticketId = (String)result.getResult().getValue();
         return result;
     }
 
-    public JsonrpcCommandResponse getActionItems(String username, String ticketId) throws ServerURLException, CredentialsException, Exception{
+    public JsonrpcCommandResponse getActionItems() throws ServerURLException, CredentialsException, Exception{
 
         JsonrpcCommandResponse result = new JsonrpcCommandResponse();
 
         List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
         methods.add(new Authenticate(username, ticketId));
         methods.add(new GetActionItems());
+        try {
+
+            JsonrpcResponse response = sendRequest(methods);
+            result = response.getResults().get(0);
+            if (result.getErrors() != null && result.getErrors().size() > 0){
+                throw new ServerURLException("Server communication error.");
+            }
+            result = response.getResults().get(1);
+
+        }
+        catch (IllegalArgumentException iae) {
+            throw new ServerURLException(iae.getMessage());
+        }
+        catch (ProcessingException pe) {
+            if (pe.getCause().getClass().equals(ConnectException.class)){
+                throw new ServerURLException(pe.getCause().getMessage());
+            }
+            else {
+                throw new ServerURLException(pe.getMessage());
+            }
+        }
+        catch (NotFoundException nfe) {
+            throw new ServerURLException(nfe.getMessage());
+        }
+        catch (Exception e){
+            throw new CredentialsException(e.getMessage());
+        }
+        return result;
+    }
+
+    public JsonrpcCommandResponse createReview(String creator, String title) throws ServerURLException, CredentialsException, Exception{
+
+        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+
+        List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
+        methods.add(new Authenticate(username, ticketId));
+        methods.add(new CreateReview(creator, title));
         try {
 
             JsonrpcResponse response = sendRequest(methods);
