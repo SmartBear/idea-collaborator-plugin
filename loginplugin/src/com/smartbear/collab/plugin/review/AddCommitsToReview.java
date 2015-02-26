@@ -160,7 +160,7 @@ public class AddCommitsToReview extends JDialog {
         catch (NoSuchAlgorithmException nsae){}
 
         java.util.List<ChangeList> changeLists =ChangeListUtils.VcsFileRevisionToChangeList(ScmToken.GIT, this.revisions);
-        
+
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){
 
