@@ -2,7 +2,7 @@ package com.smartbear.collab.plugin.review;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.smartbear.collab.client.Client;
 import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.JsonrpcCommandResponse;
@@ -34,16 +34,16 @@ public class AddCommitsToReview extends JDialog {
 
     private Client client;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
-    private VcsFileRevision[] revisions;
+    private Map<VcsFileRevision, CommittedChangeList> commits;
 
-    public AddCommitsToReview(VcsFileRevision[] revisions) {
+    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
 
-        this.revisions = revisions;
+        this.commits = commits;
         initializeClient();
-        initTextTitle(revisions);
+        initTextTitle(commits.keySet());
 
         cancelBttn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -131,20 +131,24 @@ public class AddCommitsToReview extends JDialog {
         }
     }
 
-    private void initTextTitle(VcsFileRevision[] revisions){
+    private void initTextTitle(Set<VcsFileRevision> revisions){
         String textTitle = "";
-        if (revisions.length == 1){
-            textTitle = revisions[0].getRevisionNumber() + " - " + revisions[0].getCommitMessage();
+        if (revisions.size() == 1){
+            VcsFileRevision revision = revisions.iterator().next();
+            textTitle = revision.getRevisionNumber() + " - " + revision.getCommitMessage();
         }
         else {
-            for (int idx = 0; idx < revisions.length; idx++){
-                if (idx > 0 && idx < revisions.length - 1){
-                    textTitle = textTitle.concat(",");
-                }
-                else if (idx == revisions.length - 1){
+            int count = 1;
+            while (revisions.iterator().hasNext()){
+                VcsFileRevision revision = revisions.iterator().next();
+                if (count == revisions.size()){
                     textTitle = textTitle.concat(" and ");
                 }
-                textTitle = textTitle.concat(revisions[idx].getRevisionNumber().asString());
+                else if (count > 1){
+                    textTitle = textTitle.concat(", ");
+                }
+                textTitle = textTitle.concat(revision.getRevisionNumber().asString());
+                count++;
             }
         }
         titleTxt.setText(textTitle);
@@ -159,7 +163,7 @@ public class AddCommitsToReview extends JDialog {
         }
         catch (NoSuchAlgorithmException nsae){}
 
-        java.util.List<ChangeList> changeLists =ChangeListUtils.VcsFileRevisionToChangeList(ScmToken.GIT, this.revisions);
+        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(ScmToken.GIT, this.commits);
 
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){
