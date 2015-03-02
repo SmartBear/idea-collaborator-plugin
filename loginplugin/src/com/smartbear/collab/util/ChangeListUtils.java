@@ -30,6 +30,7 @@ public class ChangeListUtils {
             VcsFileRevision fileRevision = commit.getKey();
             CommittedChangeList committedChangeList = commit.getValue();
 
+//            String scmPath = fileRevision.getChangedRepositoryPath().toString();
             CommitInfo commitInfo = new CommitInfo(fileRevision.getCommitMessage(), fileRevision.getRevisionDate(), fileRevision.getAuthor(), false, fileRevision.getRevisionNumber().asString(), "");
             List<Version> versions = new ArrayList<Version>();
             for (Change change : committedChangeList.getChanges()){
@@ -41,14 +42,23 @@ public class ChangeListUtils {
 
                 }
                 ContentRevision baseRevision = change.getBeforeRevision();
-//                BaseVersion baseVersion = new BaseVersion(baseRevision.);
+                BaseVersion baseVersion;
+                if (change.getBeforeRevision() == null) {
+                    baseVersion = null;
+                }
+                else {
+                    String baseMd5 = messageDigest.digest(baseRevision.getFile().getVirtualFile().getBOM()).toString();
+                    int baseVersionName = baseRevision.getRevisionNumber().asString().hashCode();
+                    String baseVersionPath = baseRevision.getFile().getPath();
+                    baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, "SOURCE", String.valueOf(baseVersionName), "scmPath");
+                }
+
                 //Version
                 String localPath = change.getVirtualFile().getPath();
                 byte[] md5 = messageDigest.digest(fileContent.getBytes());
                 String action = change.getFileStatus().getId();
                 int scmVersionName = change.getAfterRevision().getRevisionNumber().asString().hashCode();
-                change.getType();
-                Version version = new Version("scmPath", new String(md5), String.valueOf(scmVersionName), localPath, action, "source", null);
+                Version version = new Version("scmPath", new String(md5), String.valueOf(scmVersionName), localPath, action, "SOURCE", baseVersion);
 
                 versions.add(version);
             }

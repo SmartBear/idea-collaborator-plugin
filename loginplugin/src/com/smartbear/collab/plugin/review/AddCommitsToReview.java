@@ -1,6 +1,7 @@
 package com.smartbear.collab.plugin.review;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.smartbear.collab.client.Client;

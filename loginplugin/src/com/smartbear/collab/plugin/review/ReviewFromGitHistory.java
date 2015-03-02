@@ -9,6 +9,7 @@ import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.annotate.ShowAllAffectedGenericAction;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.*;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
@@ -47,6 +48,8 @@ public class ReviewFromGitHistory extends AnAction {
         final AbstractVcs vcs = ProjectLevelVcsManager.getInstance(project).findVcsByName(vcsKey.getName());
         if (!isNonLocal) {
             CommittedChangesProvider provider = vcs.getCommittedChangesProvider();
+            DiffProvider diffProvider = vcs.getDiffProvider();
+            VcsRevisionNumber revision1 = diffProvider.getCurrentRevision(virtualFile);
             try {
                 final Pair<CommittedChangeList, FilePath> pair = provider.getOneList(virtualFile, revisionNumber);
                 if (pair != null) {
