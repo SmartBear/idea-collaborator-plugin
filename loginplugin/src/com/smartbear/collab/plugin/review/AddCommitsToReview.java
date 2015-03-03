@@ -37,15 +37,16 @@ public class AddCommitsToReview extends JDialog {
     private Client client;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
     private Map<VcsFileRevision, CommittedChangeList> commits;
-    private AbstractVcs vcs;
+    private String rootDirectory;
 
-    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits, AbstractVcs vcs) {
+    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits, String rootDirectory) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
 
         this.commits = commits;
-        this.vcs = vcs;
+        this.rootDirectory = rootDirectory;
+
         initializeClient();
         initTextTitle(commits.keySet());
 
@@ -161,13 +162,7 @@ public class AddCommitsToReview extends JDialog {
     private void onFinish() {
         String reviewId = "";
 
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        }
-        catch (NoSuchAlgorithmException nsae){}
-
-        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(vcs, ScmToken.GIT, this.commits);
+        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(rootDirectory, ScmToken.GIT, this.commits);
 
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){

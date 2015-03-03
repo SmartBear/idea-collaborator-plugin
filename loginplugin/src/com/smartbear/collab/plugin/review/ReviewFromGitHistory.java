@@ -30,15 +30,21 @@ public class ReviewFromGitHistory extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         VcsFileRevision[] revisions = e.getData(VcsDataKeys.VCS_FILE_REVISIONS);
         Map<VcsFileRevision, CommittedChangeList> changesMap = new LinkedHashMap<VcsFileRevision, CommittedChangeList>();
+        VirtualFile anyFile = null;
         for (VcsFileRevision vcsFileRevision : revisions){
             CommittedChangeList committedChangeList = getCommittedChangeList(e.getProject(), e.getDataContext(), vcsFileRevision.getRevisionNumber());
             changesMap.put(vcsFileRevision, committedChangeList);
-
+            if (anyFile == null){
+                anyFile = committedChangeList.getChanges().iterator().next().getVirtualFile();
+            }
         }
         VcsKey vcsKey = VcsDataKeys.VCS.getData(e.getDataContext());
         final AbstractVcs vcs = ProjectLevelVcsManager.getInstance(e.getProject()).findVcsByName(vcsKey.getName());
 
-        AddCommitsToReview dialog = new AddCommitsToReview(changesMap, vcs);
+        ProjectLevelVcsManager projectLevelVcsManager = ProjectLevelVcsManager.getInstance(e.getProject());
+        String rootPath = projectLevelVcsManager.getVcsRootFor(anyFile).getCanonicalPath();
+
+        AddCommitsToReview dialog = new AddCommitsToReview(changesMap, rootPath);
         dialog.pack();
         dialog.setVisible(true);
     }

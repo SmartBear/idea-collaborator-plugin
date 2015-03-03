@@ -191,4 +191,41 @@ public class Client {
         }
         return result;
     }
+
+    public JsonrpcCommandResponse addFilesToReview(String creator, String title) throws ServerURLException, CredentialsException, Exception{
+
+        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+
+        List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
+        methods.add(new Authenticate(username, ticketId));
+        methods.add(new CreateReview(creator, title));
+        try {
+
+            JsonrpcResponse response = sendRequest(methods);
+            result = response.getResults().get(0);
+            if (result.getErrors() != null && result.getErrors().size() > 0){
+                throw new ServerURLException("Server communication error.");
+            }
+            result = response.getResults().get(1);
+
+        }
+        catch (IllegalArgumentException iae) {
+            throw new ServerURLException(iae.getMessage());
+        }
+        catch (ProcessingException pe) {
+            if (pe.getCause().getClass().equals(ConnectException.class)){
+                throw new ServerURLException(pe.getCause().getMessage());
+            }
+            else {
+                throw new ServerURLException(pe.getMessage());
+            }
+        }
+        catch (NotFoundException nfe) {
+            throw new ServerURLException(nfe.getMessage());
+        }
+        catch (Exception e){
+            throw new CredentialsException(e.getMessage());
+        }
+        return result;
+    }
 }

@@ -22,13 +22,8 @@ import java.util.Map;
  */
 public class ChangeListUtils {
 
-    public static List<ChangeList> VcsFileRevisionToChangeList(AbstractVcs vcs, ScmToken scmToken, Map<VcsFileRevision, CommittedChangeList> commits){
+    public static List<ChangeList> VcsFileRevisionToChangeList(String rootDirectory, ScmToken scmToken, Map<VcsFileRevision, CommittedChangeList> commits) {
         List<ChangeList> changeLists =  new ArrayList<ChangeList>();
-        MessageDigest messageDigest = null;
-        try {
-            messageDigest = MessageDigest.getInstance("MD5");
-        }
-        catch (NoSuchAlgorithmException nsae){}
         for (Map.Entry<VcsFileRevision, CommittedChangeList> commit : commits.entrySet()){
             VcsFileRevision fileRevision = commit.getKey();
             CommittedChangeList committedChangeList = commit.getValue();
@@ -37,6 +32,7 @@ public class ChangeListUtils {
             CommitInfo commitInfo = new CommitInfo(fileRevision.getCommitMessage(), fileRevision.getRevisionDate(), fileRevision.getAuthor(), false, fileRevision.getRevisionNumber().asString(), "");
             List<Version> versions = new ArrayList<Version>();
             for (Change change : committedChangeList.getChanges()){
+                String scmPath = getScmPath(rootDirectory, change.getVirtualFile().getCanonicalPath());
                 String fileContent = "";
                 try {
                     fileContent = change.getAfterRevision().getContent();
@@ -44,25 +40,29 @@ public class ChangeListUtils {
                 catch (VcsException ve) {
 
                 }
-                vcs.getCommittedChangesProvider().getLocationFor(change.getAfterRevision().getFile());
                 ContentRevision baseRevision = change.getBeforeRevision();
                 BaseVersion baseVersion;
                 if (change.getBeforeRevision() == null) {
                     baseVersion = null;
                 }
                 else {
-                    String baseMd5 = messageDigest.digest(baseRevision.getFile().getVirtualFile().getBOM()).toString();
-                    int baseVersionName = baseRevision.getRevisionNumber().asString().hashCode();
-                    String baseVersionPath = baseRevision.getFile().getPath();
-                    baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, CollabConstants.SOURCE_TYPE_SCM, String.valueOf(baseVersionName), "scmPath");
+                    String baseMd5 = "";
+                    try {
+                        baseMd5 = Hashing.getMD5(change.getBeforeRevision().getContent().getBytes());
+                    }
+                    catch (VcsException ve){
+
+                    }
+                    String baseVersionName = Hashing.getMD5Ascii(baseRevision.getRevisionNumber().asString());;
+                    baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, CollabConstants.SOURCE_TYPE_SCM, baseVersionName, scmPath);
                 }
 
                 //Version
                 String localPath = change.getVirtualFile().getPath();
-                byte[] md5 = messageDigest.digest(fileContent.getBytes());
+                String md5 = Hashing.getMD5(fileContent.getBytes());
                 String action = change.getFileStatus().getId();
-                int scmVersionName = change.getAfterRevision().getRevisionNumber().asString().hashCode();
-                Version version = new Version("scmPath", new String(md5), String.valueOf(scmVersionName), localPath, action, CollabConstants.SOURCE_TYPE_SCM, baseVersion);
+                String scmVersionName = Hashing.getMD5Ascii(change.getAfterRevision().getRevisionNumber().asString());
+                Version version = new Version(scmPath, new String(md5), String.valueOf(scmVersionName), localPath, action, CollabConstants.SOURCE_TYPE_SCM, baseVersion);
 
                 versions.add(version);
             }
@@ -71,6 +71,14 @@ public class ChangeListUtils {
             changeLists.add(changeList);
         }
         return changeLists;
+    }
+
+    private static String getScmPath(String root, String path){
+        String result = "";
+        if (path.contains(root)){
+            result = path.substring(root.length() + 1);
+        }
+        return result;
     }
 
     private static List<String> getConnectionParameters(ScmToken scmToken){
