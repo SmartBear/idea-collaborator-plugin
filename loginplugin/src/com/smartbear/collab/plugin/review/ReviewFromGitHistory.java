@@ -33,8 +33,12 @@ public class ReviewFromGitHistory extends AnAction {
         for (VcsFileRevision vcsFileRevision : revisions){
             CommittedChangeList committedChangeList = getCommittedChangeList(e.getProject(), e.getDataContext(), vcsFileRevision.getRevisionNumber());
             changesMap.put(vcsFileRevision, committedChangeList);
+
         }
-        AddCommitsToReview dialog = new AddCommitsToReview(changesMap);
+        VcsKey vcsKey = VcsDataKeys.VCS.getData(e.getDataContext());
+        final AbstractVcs vcs = ProjectLevelVcsManager.getInstance(e.getProject()).findVcsByName(vcsKey.getName());
+
+        AddCommitsToReview dialog = new AddCommitsToReview(changesMap, vcs);
         dialog.pack();
         dialog.setVisible(true);
     }
@@ -49,7 +53,8 @@ public class ReviewFromGitHistory extends AnAction {
         if (!isNonLocal) {
             CommittedChangesProvider provider = vcs.getCommittedChangesProvider();
             DiffProvider diffProvider = vcs.getDiffProvider();
-            VcsRevisionNumber revision1 = diffProvider.getCurrentRevision(virtualFile);
+//            VcsRevisionNumber revision1 = diffProvider.getCurrentRevision(virtualFile);
+//            vcs.getCommittedChangesProvider().getForNonLocal(virtualFile.get)
             try {
                 final Pair<CommittedChangeList, FilePath> pair = provider.getOneList(virtualFile, revisionNumber);
                 if (pair != null) {

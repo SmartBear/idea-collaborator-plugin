@@ -1,10 +1,13 @@
 package com.smartbear.collab.util;
 
+import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ContentRevision;
+import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
+import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.impl.*;
 
 import java.security.MessageDigest;
@@ -19,7 +22,7 @@ import java.util.Map;
  */
 public class ChangeListUtils {
 
-    public static List<ChangeList> VcsFileRevisionToChangeList(ScmToken scmToken, Map<VcsFileRevision, CommittedChangeList> commits){
+    public static List<ChangeList> VcsFileRevisionToChangeList(AbstractVcs vcs, ScmToken scmToken, Map<VcsFileRevision, CommittedChangeList> commits){
         List<ChangeList> changeLists =  new ArrayList<ChangeList>();
         MessageDigest messageDigest = null;
         try {
@@ -41,6 +44,7 @@ public class ChangeListUtils {
                 catch (VcsException ve) {
 
                 }
+                vcs.getCommittedChangesProvider().getLocationFor(change.getAfterRevision().getFile());
                 ContentRevision baseRevision = change.getBeforeRevision();
                 BaseVersion baseVersion;
                 if (change.getBeforeRevision() == null) {
@@ -50,7 +54,7 @@ public class ChangeListUtils {
                     String baseMd5 = messageDigest.digest(baseRevision.getFile().getVirtualFile().getBOM()).toString();
                     int baseVersionName = baseRevision.getRevisionNumber().asString().hashCode();
                     String baseVersionPath = baseRevision.getFile().getPath();
-                    baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, "SOURCE", String.valueOf(baseVersionName), "scmPath");
+                    baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, CollabConstants.SOURCE_TYPE_SCM, String.valueOf(baseVersionName), "scmPath");
                 }
 
                 //Version
@@ -58,7 +62,7 @@ public class ChangeListUtils {
                 byte[] md5 = messageDigest.digest(fileContent.getBytes());
                 String action = change.getFileStatus().getId();
                 int scmVersionName = change.getAfterRevision().getRevisionNumber().asString().hashCode();
-                Version version = new Version("scmPath", new String(md5), String.valueOf(scmVersionName), localPath, action, "SOURCE", baseVersion);
+                Version version = new Version("scmPath", new String(md5), String.valueOf(scmVersionName), localPath, action, CollabConstants.SOURCE_TYPE_SCM, baseVersion);
 
                 versions.add(version);
             }

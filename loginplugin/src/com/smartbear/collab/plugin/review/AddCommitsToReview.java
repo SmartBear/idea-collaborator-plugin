@@ -1,6 +1,7 @@
 package com.smartbear.collab.plugin.review;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
@@ -36,13 +37,15 @@ public class AddCommitsToReview extends JDialog {
     private Client client;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
     private Map<VcsFileRevision, CommittedChangeList> commits;
+    private AbstractVcs vcs;
 
-    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits) {
+    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits, AbstractVcs vcs) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
 
         this.commits = commits;
+        this.vcs = vcs;
         initializeClient();
         initTextTitle(commits.keySet());
 
@@ -164,7 +167,7 @@ public class AddCommitsToReview extends JDialog {
         }
         catch (NoSuchAlgorithmException nsae){}
 
-        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(ScmToken.GIT, this.commits);
+        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(vcs, ScmToken.GIT, this.commits);
 
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){

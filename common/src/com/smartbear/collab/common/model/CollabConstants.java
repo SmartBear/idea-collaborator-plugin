@@ -9,4 +9,8 @@ public final class CollabConstants {
     public static final String PROPERTY_USERNAME = "smartbear.collaborator.username";
     public static final String PROPERTY_TICKET_ID = "smartbear.collaborator.ticketId";
 
+    public static final String SOURCE_TYPE_SCM = "CHECKEDIN";
+    public static final String SOURCE_TYPE_LOCAL = "LOCAL";
+
+
 }
