@@ -6,21 +6,11 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.*;
-import com.intellij.openapi.vcs.annotate.ShowAllAffectedGenericAction;
-import com.intellij.openapi.vcs.changes.ChangeList;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.*;
-import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
-import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vfs.VirtualFile;
-import git4idea.actions.ShowAllSubmittedFiles;
-import git4idea.vfs.GitFileRevision;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,8 +28,6 @@ public class ReviewFromGitHistory extends AnAction {
                 anyFile = committedChangeList.getChanges().iterator().next().getVirtualFile();
             }
         }
-        VcsKey vcsKey = VcsDataKeys.VCS.getData(e.getDataContext());
-        final AbstractVcs vcs = ProjectLevelVcsManager.getInstance(e.getProject()).findVcsByName(vcsKey.getName());
 
         ProjectLevelVcsManager projectLevelVcsManager = ProjectLevelVcsManager.getInstance(e.getProject());
         String rootPath = projectLevelVcsManager.getVcsRootFor(anyFile).getCanonicalPath();
@@ -58,9 +46,6 @@ public class ReviewFromGitHistory extends AnAction {
         final AbstractVcs vcs = ProjectLevelVcsManager.getInstance(project).findVcsByName(vcsKey.getName());
         if (!isNonLocal) {
             CommittedChangesProvider provider = vcs.getCommittedChangesProvider();
-            DiffProvider diffProvider = vcs.getDiffProvider();
-//            VcsRevisionNumber revision1 = diffProvider.getCurrentRevision(virtualFile);
-//            vcs.getCommittedChangesProvider().getForNonLocal(virtualFile.get)
             try {
                 final Pair<CommittedChangeList, FilePath> pair = provider.getOneList(virtualFile, revisionNumber);
                 if (pair != null) {
@@ -74,28 +59,5 @@ public class ReviewFromGitHistory extends AnAction {
 
         return result;
     }
-
-    private CommittedChangeList getRemoteList(AbstractVcs vcs, VcsRevisionNumber revision, VirtualFile nonLocal) throws VcsException {
-        CommittedChangesProvider provider = vcs.getCommittedChangesProvider();
-        RepositoryLocation local = provider.getForNonLocal(nonLocal);
-        if(local != null) {
-            String number = revision.asString();
-            ChangeBrowserSettings settings = provider.createDefaultSettings();
-            List changes = provider.getCommittedChanges(settings, local, provider.getUnlimitedCountValue());
-            if(changes != null) {
-                Iterator i$ = changes.iterator();
-
-                while(i$.hasNext()) {
-                    CommittedChangeList change = (CommittedChangeList)i$.next();
-                    if(number.equals(String.valueOf(change.getNumber()))) {
-                        return change;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
 
 }

@@ -192,13 +192,13 @@ public class Client {
         return result;
     }
 
-    public JsonrpcCommandResponse addFilesToReview(String creator, String title) throws ServerURLException, CredentialsException, Exception{
+    public JsonrpcCommandResponse addFilesToReview(String reviewId, List<ChangeList> changeLists) throws ServerURLException, CredentialsException, Exception{
 
         JsonrpcCommandResponse result = new JsonrpcCommandResponse();
 
         List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
         methods.add(new Authenticate(username, ticketId));
-        methods.add(new CreateReview(creator, title));
+        methods.add(new AddFiles(reviewId, changeLists));
         try {
 
             JsonrpcResponse response = sendRequest(methods);

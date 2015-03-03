@@ -6,6 +6,7 @@ import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.smartbear.collab.client.Client;
+import com.smartbear.collab.client.exception.ServerURLException;
 import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.JsonrpcCommandResponse;
 import com.smartbear.collab.common.model.impl.ChangeList;
@@ -172,14 +173,25 @@ public class AddCommitsToReview extends JDialog {
                 String creator = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
                 try {
                     JsonrpcCommandResponse response = client.createReview(creator, titleTxt.getText());
+                    if (response.getErrors().isEmpty()) {
+                        reviewId = (String) response.getResult().getValue();
+                        JsonrpcCommandResponse addFilesResponse = client.addFilesToReview(reviewId, changeLists);
+                    }
+                    else {
+
+                    }
 
                 }
+                catch (ServerURLException sue){
+                    JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\n" + sue.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                }
                 catch (Exception e){
-
+                    JOptionPane.showMessageDialog(null, "Could not create the review \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
         else if (addToExistingReviewRdBttn.isSelected()){
+
 
         }
         if (!reviewId.isEmpty()){
