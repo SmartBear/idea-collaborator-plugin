@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>com.smartbear.collab.plugin</id>
   <name>Smartbear Collaborator</name>
-  <version>0.1</version>
+  <version>0.2-alpha</version>
   <vendor email="support@yourcompany.com" url="http://www.smartbear.com">Smartbear</vendor>
 
   <description><![CDATA[
