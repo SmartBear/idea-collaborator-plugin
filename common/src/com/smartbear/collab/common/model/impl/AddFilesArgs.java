@@ -9,10 +9,26 @@ import java.util.List;
  */
 public class AddFilesArgs implements JsonrpcArgs {
     private String reviewId;
-    private List<ChangeList> changeLists;
+    private List<ChangeList> changelists;
 
-    public AddFilesArgs(String reviewId, List<ChangeList> changeLists) {
+    public AddFilesArgs(String reviewId, List<ChangeList> changelists) {
         this.reviewId = reviewId;
-        this.changeLists = changeLists;
+        this.changelists = changelists;
+    }
+
+    public String getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(String reviewId) {
+        this.reviewId = reviewId;
+    }
+
+    public List<ChangeList> getChangelists() {
+        return changelists;
+    }
+
+    public void setChangeLists(List<ChangeList> changelists) {
+        this.changelists = changelists;
     }
 }

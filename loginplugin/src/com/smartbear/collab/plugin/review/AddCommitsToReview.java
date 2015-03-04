@@ -26,8 +26,6 @@ public class AddCommitsToReview extends JDialog {
     private JPanel contentPane;
     private JButton cancelBttn;
     private JButton finishBttn;
-    private JButton backBttn;
-    private JButton nextBttn;
     private JRadioButton createNewReviewRdBttn;
     private JRadioButton addToExistingReviewRdBttn;
     private JTextField titleTxt;
@@ -44,6 +42,7 @@ public class AddCommitsToReview extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
+        this.setTitle("Add Commits to Review");
 
         this.commits = commits;
         this.rootDirectory = rootDirectory;
@@ -77,7 +76,7 @@ public class AddCommitsToReview extends JDialog {
                 if (addToExistingReviewRdBttn.isSelected()){
                     refreshReviewsBttn.setEnabled(true);
                     existingReviewsLst.setEnabled(true);
-                    titleTxt.setEnabled(false);
+                    titleTxt.setEnabled(true);
                     refreshReviewsBttn.doClick();
                 }
                 else {
@@ -162,6 +161,7 @@ public class AddCommitsToReview extends JDialog {
 
     private void onFinish() {
         String reviewId = "";
+        String reviewTitle = "";
 
         java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(rootDirectory, ScmToken.GIT, this.commits);
 
@@ -172,13 +172,13 @@ public class AddCommitsToReview extends JDialog {
             else {
                 String creator = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
                 try {
+                    reviewTitle = titleTxt.getText();
                     JsonrpcCommandResponse response = client.createReview(creator, titleTxt.getText());
-                    if (response.getErrors().isEmpty()) {
-                        reviewId = (String) response.getResult().getValue();
-                        JsonrpcCommandResponse addFilesResponse = client.addFilesToReview(reviewId, changeLists);
+                    if (response.getErrors() == null || response.getErrors().isEmpty()) {
+                        reviewId = ((Integer) response.getResult().getValue()).toString();
                     }
                     else {
-
+                        JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\n" + response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                     }
 
                 }
@@ -191,12 +191,31 @@ public class AddCommitsToReview extends JDialog {
             }
         }
         else if (addToExistingReviewRdBttn.isSelected()){
-
-
+            if (existingReviewsLst.isSelectionEmpty()){
+                JOptionPane.showMessageDialog(null, "Please select a review", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                String selectedReview = (String)existingReviewsLst.getSelectedValue();
+                reviewId = selectedReview.substring("Review #".length(), selectedReview.indexOf(':'));
+                reviewTitle = selectedReview.substring(selectedReview.indexOf(':'));
+            }
         }
-        if (!reviewId.isEmpty()){
 
-            dispose();
+        if (!reviewId.isEmpty()){
+            try {
+                JsonrpcCommandResponse addFilesResponse = client.addFilesToReview(reviewId, changeLists);
+                if (addFilesResponse.getErrors() == null || addFilesResponse.getErrors().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Review # " + reviewId + ": " + reviewTitle, "Review created", JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                }
+            }
+            catch (ServerURLException sue){
+                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\n" + sue.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+            }
+            catch (Exception e){
+                JOptionPane.showMessageDialog(null, "Could not create the review \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+            }
+
         }
     }
 
