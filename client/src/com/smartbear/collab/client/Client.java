@@ -9,8 +9,7 @@ import com.smartbear.collab.client.exception.ServerURLException;
 import com.smartbear.collab.common.model.*;
 import com.smartbear.collab.common.model.impl.*;
 import org.glassfish.jersey.internal.util.Base64;
-import org.glassfish.jersey.media.multipart.MultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.multipart.*;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
 import javax.ws.rs.NotFoundException;
@@ -26,6 +25,7 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -112,19 +112,30 @@ public class Client {
         return result;
     }
 
-    public boolean sendZip(File zipFile) {
+    public boolean sendZip(Map.Entry<String, byte[]> zipFile) {
         javax.ws.rs.client.Client zipClient = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
         WebTarget webTarget = zipClient.target(serverURL).path("contentupload");
-        MultiPart multiPart = new MultiPart();
-        multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
 
-        FileDataBodyPart fileDataBodyPart = new FileDataBodyPart(zipFile.getName(), zipFile,
-                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        multiPart.bodyPart(fileDataBodyPart);
+        final FormDataMultiPart formDataMultiPart = new FormDataMultiPart();
+        final FormDataContentDisposition disposition = FormDataContentDisposition
+                .name("file")
+                .fileName(zipFile.getKey())
+                .size(zipFile.getValue().length)
+                .build();
+        final FormDataBodyPart bodyPart = new FormDataBodyPart(disposition, zipFile.getValue(), MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        formDataMultiPart.bodyPart(bodyPart);
+
+
+//        MultiPart multiPart = new MultiPart();
+//        multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
+
+//        FileDataBodyPart fileDataBodyPart = new FileDataBodyPart("file", zipFile.getValue(),
+//                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+//        multiPart.bodyPart(fileDataBodyPart);
         Response response = webTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization: Basic ", Base64.encodeAsString(username + ":"))
+                .header("Authorization", "BASIC " + Base64.encodeAsString(username + ":"))
         .header("WWW-authenticate-CodeCollabTicket", ticketId)
-                .post(Entity.entity(multiPart, multiPart.getMediaType()));
+                .post(Entity.entity(formDataMultiPart, formDataMultiPart.getMediaType()));
 
         if (response.getStatus() == 200){
             return true;

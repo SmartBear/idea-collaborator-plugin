@@ -166,6 +166,7 @@ public class AddCommitsToReview extends JDialog {
     private void onFinish() {
         String reviewId = "";
         String reviewTitle = "";
+        boolean zipFilesSent = true;
 
         java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(rootDirectory, ScmToken.GIT, this.commits);
 
@@ -177,9 +178,13 @@ public class AddCommitsToReview extends JDialog {
                 String creator = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
                 try {
                     reviewTitle = titleTxt.getText();
-                    java.util.List<File> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()));
-                    for (File zip : zips){
-                        client.sendZip(zip);
+                    Map<String, byte[]> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()));
+                    for (Map.Entry<String, byte[]> zip : zips.entrySet()){
+                        zipFilesSent = zipFilesSent && client.sendZip(zip);
+                        File file = new File(zip.getKey());
+                        FileOutputStream fos = new FileOutputStream(file);
+                        fos.write(zip.getValue());
+                        fos.close();
                     }
                     JsonrpcCommandResponse response = client.createReview(creator, titleTxt.getText());
                     if (response.getErrors() == null || response.getErrors().isEmpty()) {
@@ -209,7 +214,7 @@ public class AddCommitsToReview extends JDialog {
             }
         }
 
-        if (!reviewId.isEmpty()){
+        if (!reviewId.isEmpty() && zipFilesSent){
             try {
                 JsonrpcCommandResponse addFilesResponse = client.addFilesToReview(reviewId, changeLists);
                 if (addFilesResponse.getErrors() == null || addFilesResponse.getErrors().isEmpty()){

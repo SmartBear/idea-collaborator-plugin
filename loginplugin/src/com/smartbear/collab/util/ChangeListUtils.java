@@ -75,24 +75,17 @@ public class ChangeListUtils {
                 versions.add(version);
             }
 
-            ChangeList changeList = new ChangeList(scmToken, getConnectionParameters(scmToken), "rev" + committedChangeList.getNumber() + ".zip",commitInfo, versions);
+            ChangeList changeList = new ChangeList(scmToken, getConnectionParameters(scmToken), "rev" + Math.abs(committedChangeList.getNumber()) + ".zip",commitInfo, versions);
             changeLists.add(changeList);
         }
         return changeLists;
     }
 
-    public static List<File> getZipFiles(List<CommittedChangeList> commits) {
-        List<File> zips =  new ArrayList<File>();
+    public static Map<String, byte[]> getZipFiles(List<CommittedChangeList> commits) {
+        Map<String, byte[]> zips = new HashMap<String, byte[]>();
         for (CommittedChangeList commit : commits){
-            FileOutputStream fos = null;
-            File file = null;
-            try {
-                file = new File("rev" + commit.getNumber() + ".zip");
-                fos = new FileOutputStream(file);
-            } catch (FileNotFoundException fnfe){
-
-            }
-            ZipOutputStream zip = new ZipOutputStream(fos);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(baos);
             for (Change change : commit.getChanges()){
                 String fileContent = "";
                 try {
@@ -105,21 +98,26 @@ public class ChangeListUtils {
                 ZipEntry zipEntry = new ZipEntry(md5);
 
                 try {
-                    zip.putNextEntry(zipEntry);
-                    zip.write(fileContent.getBytes());
+                    zos.putNextEntry(zipEntry);
+                    zos.write(fileContent.getBytes());
+                    zos.closeEntry();
                 }
                 catch (IOException ioe) {
 
                 }
             }
+
+            zips.put("rev_" + Math.abs(commit.getNumber()) + ".zip", baos.toByteArray());
             try {
-                zip.close();
+                File file = new File("zipTest.zip");
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(baos.toByteArray());
+                fos.close();
+                baos.close();
             }
             catch (IOException ioe) {
 
             }
-
-            zips.add(file);
         }
         return zips;
     }
