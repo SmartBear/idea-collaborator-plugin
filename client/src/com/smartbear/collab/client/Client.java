@@ -8,6 +8,7 @@ import com.smartbear.collab.client.exception.CredentialsException;
 import com.smartbear.collab.client.exception.ServerURLException;
 import com.smartbear.collab.common.model.*;
 import com.smartbear.collab.common.model.impl.*;
+import org.glassfish.jersey.internal.util.Base64;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
@@ -120,10 +121,9 @@ public class Client {
         FileDataBodyPart fileDataBodyPart = new FileDataBodyPart(zipFile.getName(), zipFile,
                 MediaType.APPLICATION_OCTET_STREAM_TYPE);
         multiPart.bodyPart(fileDataBodyPart);
-
         Response response = webTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization: Basic ", this.username + ":")
-        .header("WWW-authenticate-CodeCollabTicket", this.ticketId)
+                .header("Authorization: Basic ", Base64.encodeAsString(username + ":"))
+        .header("WWW-authenticate-CodeCollabTicket", ticketId)
                 .post(Entity.entity(multiPart, multiPart.getMediaType()));
 
         if (response.getStatus() == 200){
