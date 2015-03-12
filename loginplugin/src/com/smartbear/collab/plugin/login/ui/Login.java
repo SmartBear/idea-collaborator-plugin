@@ -91,14 +91,14 @@ public class Login extends JDialog {
             JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n" +
                     "\n" +
                     "Reason:\n" +
-                    "could not build URL", "Collaborator Error", JOptionPane.OK_OPTION);
+                    "could not build URL", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
             result = false;
         }
         else {
                 client = new Client(serverCmb.getSelectedItem().toString());
         }
         if (result && usernameTxt.getText().isEmpty()){
-            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\nEnter a username", "Collaborator Error", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\nEnter a username", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
             result = false;
         }
         else {
@@ -110,28 +110,28 @@ public class Login extends JDialog {
                 JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n" +
                         "\n" +
                         "Reason:\n" +
-                        "Connection refused:" + sue.getMessage(), "Collaborator Error", JOptionPane.OK_OPTION);
+                        "Connection refused:" + sue.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 result = false;
             }
             catch (CredentialsException ce) {
                 JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
                                 "\n" +
                                 "Reason:\n" +
-                                "Invalid username and or password.", "Collaborator Error", JOptionPane.OK_OPTION);
+                                "Invalid username and or password.", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 result = false;
             }
             catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
                         "\n" +
                         "Reason:\n" +
-                        "Connection refused:" + e.getMessage(), "Collaborator Error", JOptionPane.OK_OPTION);
+                        "Connection refused:" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 result = false;
             }
             if (response.getErrors() != null && !response.getErrors().isEmpty()){
                 JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
                         "\n" +
                         "Reason:\n" +
-                        response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.OK_OPTION);
+                        response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 result = false;
             }
             else if (response.getResult() != null){

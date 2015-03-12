@@ -10,12 +10,12 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.impl.*;
 
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by mzumbado on 2/26/15.
@@ -53,7 +53,14 @@ public class ChangeListUtils {
                     catch (VcsException ve){
 
                     }
-                    String baseVersionName = Hashing.getMD5Ascii(baseRevision.getRevisionNumber().asString());;
+                    String baseVersionName = "";
+                    try {
+                        String gitHash = "blob " + change.getBeforeRevision().getContent().length() + "\0" + change.getBeforeRevision().getContent();
+                        baseVersionName = Hashing.getSHA1(gitHash.getBytes());
+                    }
+                    catch (VcsException ve){
+
+                    }
                     baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, CollabConstants.SOURCE_TYPE_SCM, baseVersionName, scmPath);
                 }
 
@@ -61,16 +68,60 @@ public class ChangeListUtils {
                 String localPath = change.getVirtualFile().getPath();
                 String md5 = Hashing.getMD5(fileContent.getBytes());
                 String action = change.getFileStatus().getId();
-                String scmVersionName = Hashing.getMD5Ascii(change.getAfterRevision().getRevisionNumber().asString());
-                Version version = new Version(scmPath, new String(md5), String.valueOf(scmVersionName), localPath, action, CollabConstants.SOURCE_TYPE_SCM, baseVersion);
+                String gitHash = "blob " + fileContent.length() + "\0" + fileContent;
+                String scmVersionName = Hashing.getSHA1(gitHash.getBytes());
+                Version version = new Version(scmPath, md5, scmVersionName, localPath, action, CollabConstants.SOURCE_TYPE_SCM, baseVersion);
 
                 versions.add(version);
             }
 
-            ChangeList changeList = new ChangeList(scmToken, getConnectionParameters(scmToken), commitInfo, versions);
+            ChangeList changeList = new ChangeList(scmToken, getConnectionParameters(scmToken), "rev" + committedChangeList.getNumber() + ".zip",commitInfo, versions);
             changeLists.add(changeList);
         }
         return changeLists;
+    }
+
+    public static List<File> getZipFiles(List<CommittedChangeList> commits) {
+        List<File> zips =  new ArrayList<File>();
+        for (CommittedChangeList commit : commits){
+            FileOutputStream fos = null;
+            File file = null;
+            try {
+                file = new File("rev" + commit.getNumber() + ".zip");
+                fos = new FileOutputStream(file);
+            } catch (FileNotFoundException fnfe){
+
+            }
+            ZipOutputStream zip = new ZipOutputStream(fos);
+            for (Change change : commit.getChanges()){
+                String fileContent = "";
+                try {
+                    fileContent = change.getAfterRevision().getContent();
+                }
+                catch (VcsException ve) {
+
+                }
+                String md5 = Hashing.getMD5(fileContent.getBytes());
+                ZipEntry zipEntry = new ZipEntry(md5);
+
+                try {
+                    zip.putNextEntry(zipEntry);
+                    zip.write(fileContent.getBytes());
+                }
+                catch (IOException ioe) {
+
+                }
+            }
+            try {
+                zip.close();
+            }
+            catch (IOException ioe) {
+
+            }
+
+            zips.add(file);
+        }
+        return zips;
     }
 
     private static String getScmPath(String root, String path){

@@ -18,9 +18,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.List;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 public class AddCommitsToReview extends JDialog {
     private JPanel contentPane;
@@ -173,6 +177,10 @@ public class AddCommitsToReview extends JDialog {
                 String creator = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
                 try {
                     reviewTitle = titleTxt.getText();
+                    java.util.List<File> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()));
+                    for (File zip : zips){
+                        client.sendZip(zip);
+                    }
                     JsonrpcCommandResponse response = client.createReview(creator, titleTxt.getText());
                     if (response.getErrors() == null || response.getErrors().isEmpty()) {
                         reviewId = ((Integer) response.getResult().getValue()).toString();
@@ -218,7 +226,6 @@ public class AddCommitsToReview extends JDialog {
 
         }
     }
-
     private String getReviewTitle(){
         String result = "";
         if (createNewReviewRdBttn.isSelected()){

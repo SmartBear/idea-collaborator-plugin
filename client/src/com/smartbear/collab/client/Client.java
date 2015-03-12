@@ -1,10 +1,16 @@
 package com.smartbear.collab.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.smartbear.collab.client.exception.ClientException;
 import com.smartbear.collab.client.exception.CredentialsException;
 import com.smartbear.collab.client.exception.ServerURLException;
 import com.smartbear.collab.common.model.*;
 import com.smartbear.collab.common.model.impl.*;
+import org.glassfish.jersey.media.multipart.MultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
@@ -12,21 +18,29 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by mzumbado on 2/10/15.
  */
 public class Client {
     static WebTarget target;
+    private String serverURL;
     private String username;
     private String ticketId;
 
+    Logger logger = Logger.getLogger(Client.class.toString());
+
     public Client(String URLStr) {
         javax.ws.rs.client.Client client = ClientBuilder.newClient();
+        this.serverURL = URLStr;
         this.target = client.target(URLStr).path("services/json/v1");
     }
 
@@ -48,9 +62,22 @@ public class Client {
 
         List<LinkedHashMap<String, LinkedHashMap<String, String>> > results = new ArrayList<LinkedHashMap<String, LinkedHashMap<String, String>> >();
 
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            logger.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(methods));
+        }
+        catch (JsonProcessingException jpe){
+        }
+
         results = target.request(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(methods, MediaType.APPLICATION_JSON_TYPE),
                         List.class);
+
+        try {
+            logger.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
+        }
+        catch (JsonProcessingException jpe){
+        }
 
         List<JsonrpcCommandResponse> commandResponses = new ArrayList<JsonrpcCommandResponse>();
         for (LinkedHashMap commandResultMap : results){
@@ -82,6 +109,27 @@ public class Client {
         result.setResults(commandResponses);
 
         return result;
+    }
+
+    public boolean sendZip(File zipFile) {
+        javax.ws.rs.client.Client zipClient = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
+        WebTarget webTarget = zipClient.target(serverURL).path("contentupload");
+        MultiPart multiPart = new MultiPart();
+        multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
+
+        FileDataBodyPart fileDataBodyPart = new FileDataBodyPart(zipFile.getName(), zipFile,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        multiPart.bodyPart(fileDataBodyPart);
+
+        Response response = webTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization: Basic ", this.username + ":")
+        .header("WWW-authenticate-CodeCollabTicket", this.ticketId)
+                .post(Entity.entity(multiPart, multiPart.getMediaType()));
+
+        if (response.getStatus() == 200){
+            return true;
+        }
+        return false;
     }
 
     public JsonrpcCommandResponse login(String username, String password) throws ServerURLException, CredentialsException, Exception{

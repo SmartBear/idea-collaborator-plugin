@@ -179,6 +179,22 @@ public final class Hashing
     }
 
 
+    /**
+     * @param data raw data to compute SHA-1 for
+     * @return textual representation of the SHA-1 digest
+     */
+    public static String getSHA1( final byte[] data )
+    {
+        try
+        {
+            return getHexFromBytes( MessageDigest.getInstance( "SHA-1" ).digest( data ) );
+        }
+        catch ( NoSuchAlgorithmException e )
+        {
+            LOG.warn("SHA-1 not available", e);
+            return "SHA-1 not available";
+        }
+    }
 
     /**
      * Copy everything from the input to output, and calculate the MD5 checksum of the copied bytes
