@@ -68,8 +68,7 @@ public class ChangeListUtils {
                 String localPath = change.getVirtualFile().getPath();
                 String md5 = Hashing.getMD5(fileContent.getBytes());
                 String action = change.getFileStatus().getId();
-                String gitHash = "blob " + fileContent.length() + "\0" + fileContent;
-                String scmVersionName = Hashing.getSHA1(gitHash.getBytes());
+                String scmVersionName = getScmVersionName(scmToken, fileContent);
                 Version version = new Version(scmPath, md5, scmVersionName, localPath, action, CollabConstants.SOURCE_TYPE_SCM, baseVersion);
 
                 versions.add(version);
@@ -79,6 +78,19 @@ public class ChangeListUtils {
             changeLists.add(changeList);
         }
         return changeLists;
+    }
+
+    public static String getScmVersionName(ScmToken scmToken, String fileContent){
+        String scmVersionName = "";
+        if (scmToken == ScmToken.GIT) {
+            String gitHash = "blob " + fileContent.length() + "\0" + fileContent;
+            scmVersionName = Hashing.getSHA1(gitHash.getBytes());
+        }
+        else if (scmToken == ScmToken.SUBVERSION) {
+            String gitHash = "blob " + fileContent.length() + "\0" + fileContent;
+            scmVersionName = Hashing.getSHA1(gitHash.getBytes());
+        }
+        return scmVersionName;
     }
 
     public static Map<String, byte[]> getZipFiles(List<CommittedChangeList> commits) {
@@ -134,10 +146,6 @@ public class ChangeListUtils {
             }
             zips.put("rev_" + Math.abs(commit.getNumber()) + ".zip", baos.toByteArray());
             try {
-//                File file = new File("zipTest.zip");
-//                FileOutputStream fos = new FileOutputStream(file);
-//                fos.write(baos.toByteArray());
-//                fos.close();
                 baos.close();
             }
             catch (IOException ioe) {
