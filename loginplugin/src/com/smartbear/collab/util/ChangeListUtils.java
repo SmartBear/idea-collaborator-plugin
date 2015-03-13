@@ -75,7 +75,7 @@ public class ChangeListUtils {
                 versions.add(version);
             }
 
-            ChangeList changeList = new ChangeList(scmToken, getConnectionParameters(scmToken), "rev" + Math.abs(committedChangeList.getNumber()) + ".zip",commitInfo, versions);
+            ChangeList changeList = new ChangeList(scmToken, getConnectionParameters(scmToken),commitInfo, versions);
             changeLists.add(changeList);
         }
         return changeLists;
@@ -87,6 +87,26 @@ public class ChangeListUtils {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ZipOutputStream zos = new ZipOutputStream(baos);
             for (Change change : commit.getChanges()){
+                if (change.getBeforeRevision() != null){
+                    String baseFileContent = "";
+                    try {
+                        baseFileContent = change.getBeforeRevision().getContent();
+                    }
+                    catch (VcsException ve) {
+
+                    }
+                    String baseMd5 = Hashing.getMD5(baseFileContent.getBytes());
+                    ZipEntry baseZipEntry = new ZipEntry(baseMd5);
+
+                    try {
+                        zos.putNextEntry(baseZipEntry);
+                        zos.write(baseFileContent.getBytes());
+                        zos.closeEntry();
+                    }
+                    catch (IOException ioe) {
+
+                    }
+                }
                 String fileContent = "";
                 try {
                     fileContent = change.getAfterRevision().getContent();
@@ -106,13 +126,18 @@ public class ChangeListUtils {
 
                 }
             }
-
+            try {
+                zos.finish();
+                zos.close();
+            }
+            catch (IOException ioe) {
+            }
             zips.put("rev_" + Math.abs(commit.getNumber()) + ".zip", baos.toByteArray());
             try {
-                File file = new File("zipTest.zip");
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(baos.toByteArray());
-                fos.close();
+//                File file = new File("zipTest.zip");
+//                FileOutputStream fos = new FileOutputStream(file);
+//                fos.write(baos.toByteArray());
+//                fos.close();
                 baos.close();
             }
             catch (IOException ioe) {
@@ -141,6 +166,16 @@ public class ChangeListUtils {
             result.add(globalprovider);
             result.add(scm);
             result.add(gitexe);
+        }
+        else if (scmToken == ScmToken.SUBVERSION){
+            String currentdirectory = "";
+            String globalprovider = "svn";
+            String scm = "svn";
+            String svnexe = "";
+            result.add(currentdirectory);
+            result.add(globalprovider);
+            result.add(scm);
+            result.add(svnexe);
         }
         return result;
     }

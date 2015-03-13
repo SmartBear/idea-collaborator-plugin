@@ -20,6 +20,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.ConnectException;
 import java.util.ArrayList;
@@ -125,17 +126,29 @@ public class Client {
         final FormDataBodyPart bodyPart = new FormDataBodyPart(disposition, zipFile.getValue(), MediaType.APPLICATION_OCTET_STREAM_TYPE);
         formDataMultiPart.bodyPart(bodyPart);
 
+/*
+        MultiPart multiPart = new MultiPart();
+        multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
 
-//        MultiPart multiPart = new MultiPart();
-//        multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
+        File file = new File(zipFile.getKey());
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            fis.read(zipFile.getValue());
+            fis.close();
+        }
+        catch (Exception e){}
 
-//        FileDataBodyPart fileDataBodyPart = new FileDataBodyPart("file", zipFile.getValue(),
-//                MediaType.APPLICATION_OCTET_STREAM_TYPE);
-//        multiPart.bodyPart(fileDataBodyPart);
+        FileDataBodyPart fileDataBodyPart = new FileDataBodyPart(zipFile.getKey(), file,
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        multiPart.bodyPart(fileDataBodyPart);
+*/
         Response response = webTarget.request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "BASIC " + Base64.encodeAsString(username + ":"))
         .header("WWW-authenticate-CodeCollabTicket", ticketId)
                 .post(Entity.entity(formDataMultiPart, formDataMultiPart.getMediaType()));
+
+        logger.info("Authorization : BASIC " + Base64.encodeAsString(username + ":"));
+        logger.info("WWW-authenticate-CodeCollabTicket :" + ticketId);
 
         if (response.getStatus() == 200){
             return true;
