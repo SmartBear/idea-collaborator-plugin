@@ -75,6 +75,8 @@ public class AddCommitsToReview extends JDialog {
         radioButtons.add(createNewReviewRdBttn);
         radioButtons.add(addToExistingReviewRdBttn);
 
+        existingReviewsLst.setAutoscrolls(true);
+
         addToExistingReviewRdBttn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (addToExistingReviewRdBttn.isSelected()){
