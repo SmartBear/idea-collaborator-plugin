@@ -150,8 +150,9 @@ public class AddCommitsToReview extends JDialog {
         }
         else {
             int count = 1;
-            while (revisions.iterator().hasNext()){
-                VcsFileRevision revision = revisions.iterator().next();
+            Iterator<VcsFileRevision> iterator = revisions.iterator();
+            while (iterator.hasNext()){
+                VcsFileRevision revision = iterator.next();
                 if (count == revisions.size()){
                     textTitle = textTitle.concat(" and ");
                 }
@@ -169,7 +170,7 @@ public class AddCommitsToReview extends JDialog {
         String reviewId = "";
         String reviewTitle = "";
         boolean zipFilesSent = true;
-
+        //TODO: ScmToken.GIT
         java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(rootDirectory, ScmToken.GIT, this.commits);
 
         if (createNewReviewRdBttn.isSelected()){

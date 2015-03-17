@@ -32,7 +32,6 @@ public class ChangeListUtils {
             CommitInfo commitInfo = new CommitInfo(fileRevision.getCommitMessage(), fileRevision.getRevisionDate(), fileRevision.getAuthor(), false, fileRevision.getRevisionNumber().asString(), "");
             List<Version> versions = new ArrayList<Version>();
             for (Change change : committedChangeList.getChanges()){
-                String scmPath = getScmPath(rootDirectory, change.getVirtualFile().getCanonicalPath());
                 String fileContent = "";
                 try {
                     fileContent = change.getAfterRevision().getContent();
@@ -42,30 +41,31 @@ public class ChangeListUtils {
                 }
                 ContentRevision baseRevision = change.getBeforeRevision();
                 BaseVersion baseVersion;
-                if (change.getBeforeRevision() == null) {
+                if (baseRevision == null) {
                     baseVersion = null;
                 }
                 else {
                     String baseMd5 = "";
+                    String baseScmPath = getScmPath(rootDirectory, baseRevision.getFile().getPath());
                     try {
-                        baseMd5 = Hashing.getMD5(change.getBeforeRevision().getContent().getBytes());
+                        baseMd5 = Hashing.getMD5(baseRevision.getContent().getBytes());
                     }
                     catch (VcsException ve){
 
                     }
                     String baseVersionName = "";
                     try {
-                        String gitHash = "blob " + change.getBeforeRevision().getContent().length() + "\0" + change.getBeforeRevision().getContent();
-                        baseVersionName = Hashing.getSHA1(gitHash.getBytes());
+                        baseVersionName = getScmVersionName(scmToken, baseRevision.getContent());
                     }
                     catch (VcsException ve){
 
                     }
-                    baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, CollabConstants.SOURCE_TYPE_SCM, baseVersionName, scmPath);
+                    baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, CollabConstants.SOURCE_TYPE_SCM, baseVersionName, baseScmPath);
                 }
 
                 //Version
-                String localPath = change.getVirtualFile().getPath();
+                String localPath = change.getAfterRevision().getFile().getPath();
+                String scmPath = getScmPath(rootDirectory, change.getAfterRevision().getFile().getPath());
                 String md5 = Hashing.getMD5(fileContent.getBytes());
                 String action = change.getFileStatus().getId();
                 String scmVersionName = getScmVersionName(scmToken, fileContent);
