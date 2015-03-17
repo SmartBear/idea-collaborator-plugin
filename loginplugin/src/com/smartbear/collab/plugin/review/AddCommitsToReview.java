@@ -41,8 +41,9 @@ public class AddCommitsToReview extends JDialog {
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
     private Map<VcsFileRevision, CommittedChangeList> commits;
     private String rootDirectory;
+    private ScmToken scmToken;
 
-    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits, String rootDirectory) {
+    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits, String rootDirectory, ScmToken scmToken) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
@@ -50,6 +51,7 @@ public class AddCommitsToReview extends JDialog {
 
         this.commits = commits;
         this.rootDirectory = rootDirectory;
+        this.scmToken = scmToken;
 
         initializeClient();
         initTextTitle(commits.keySet());
@@ -170,8 +172,7 @@ public class AddCommitsToReview extends JDialog {
         String reviewId = "";
         String reviewTitle = "";
         boolean zipFilesSent = true;
-        //TODO: ScmToken.GIT
-        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(rootDirectory, ScmToken.GIT, this.commits);
+        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(rootDirectory, scmToken, this.commits);
 
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){

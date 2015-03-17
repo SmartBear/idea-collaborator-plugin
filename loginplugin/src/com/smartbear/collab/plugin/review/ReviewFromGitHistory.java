@@ -9,6 +9,7 @@ import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.history.*;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.smartbear.collab.common.model.impl.ScmToken;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,7 +33,9 @@ public class ReviewFromGitHistory extends AnAction {
         ProjectLevelVcsManager projectLevelVcsManager = ProjectLevelVcsManager.getInstance(e.getProject());
         String rootPath = projectLevelVcsManager.getVcsRootFor(anyFile).getCanonicalPath();
 
-        AddCommitsToReview dialog = new AddCommitsToReview(changesMap, rootPath);
+        VcsKey vcsKey = VcsDataKeys.VCS.getData(e.getDataContext());
+        ScmToken scmToken = ScmToken.fromIdeaValue(vcsKey.getName());
+        AddCommitsToReview dialog = new AddCommitsToReview(changesMap, rootPath, scmToken);
         dialog.pack();
         dialog.setVisible(true);
     }
