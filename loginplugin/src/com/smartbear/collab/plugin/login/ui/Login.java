@@ -6,14 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.util.Disposer;
 import com.smartbear.collab.client.Client;
 import com.smartbear.collab.client.exception.ClientException;
 import com.smartbear.collab.client.exception.CredentialsException;
 import com.smartbear.collab.client.exception.ServerURLException;
 import com.smartbear.collab.common.model.JsonrpcCommandResponse;
 import com.smartbear.collab.common.model.CollabConstants;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.Nullable;
 
-public class Login extends JDialog {
+public class Login implements Configurable {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -31,37 +36,68 @@ public class Login extends JDialog {
 
     private static final int RECENT_SERVERS_SIZE = 10;
 
-    public Login() {
-        setContentPane(contentPane);
-        setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+    @Override
+    public void disposeUIResources() {
+//        Disposer.dispose(myTreeBuilder);
+//        myTrustManager.removeListener(this);
+    }
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+    @Override
+    public void reset() {
+//        Disposer.dispose(myTreeBuilder);
+//        myTrustManager.removeListener(this);
+    }
+
+    @Nls
+    @Override
+    public String getDisplayName() {
+        return "Server Login";
+    }
+
+    @Nullable
+    @Override
+    public JComponent createComponent() {
+        // lazily initialized to ensure that disposeUIResources() will be called, if
+        // tree builder was created
+        initializeUI();
+        return contentPane;
+    }
+
+    @Override
+    public void apply() throws ConfigurationException {
+        persistValues();
+    }
+
+    @Nullable
+    @Override
+    public String getHelpTopic() {
+        return "Enter the Smartbear Collaborator server login credentials";
+    }
+
+    @Override
+    public boolean isModified() {
+        return false;
+    }
+
+    private void initializeUI() {
+//        setContentPane(contentPane);
+//        setModal(true);
+//        getRootPane().setDefaultButton(buttonOK);
 
         testBttn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onTest();
             }
         });
-
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
-
+        
 // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+/*        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 onCancel();
             }
         });
-
+*/
 // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -145,7 +181,7 @@ public class Login extends JDialog {
     private void onOK() {
         if (validateFields()) {
             persistValues();
-            dispose();
+//            dispose();
         }
     }
 
@@ -183,13 +219,13 @@ public class Login extends JDialog {
 
     private void onCancel() {
 // add your code here if necessary
-        dispose();
+//        dispose();
     }
-
+/*
     public static void main(String[] args) {
         Login dialog = new Login();
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
-    }
+    }*/
 }

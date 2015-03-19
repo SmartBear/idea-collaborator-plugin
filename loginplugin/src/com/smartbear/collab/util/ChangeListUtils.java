@@ -54,12 +54,7 @@ public class ChangeListUtils {
 
                     }
                     String baseVersionName = "";
-                    try {
-                        baseVersionName = getScmVersionName(scmToken, baseRevision.getContent());
-                    }
-                    catch (VcsException ve){
-
-                    }
+                    baseVersionName = getScmVersionName(scmToken, baseRevision);
                     baseVersion = new BaseVersion(change.getFileStatus().getId(), baseMd5, commitInfo, CollabConstants.SOURCE_TYPE_SCM, baseVersionName, baseScmPath);
                 }
 
@@ -68,7 +63,7 @@ public class ChangeListUtils {
                 String scmPath = getScmPath(rootDirectory, change.getAfterRevision().getFile().getPath());
                 String md5 = Hashing.getMD5(fileContent.getBytes());
                 String action = change.getFileStatus().getId();
-                String scmVersionName = getScmVersionName(scmToken, fileContent);
+                String scmVersionName = getScmVersionName(scmToken, change.getAfterRevision());
                 Version version = new Version(scmPath, md5, scmVersionName, localPath, action, CollabConstants.SOURCE_TYPE_SCM, baseVersion);
 
                 versions.add(version);
@@ -80,15 +75,17 @@ public class ChangeListUtils {
         return changeLists;
     }
 
-    public static String getScmVersionName(ScmToken scmToken, String fileContent){
+    public static String getScmVersionName(ScmToken scmToken, ContentRevision revision){
         String scmVersionName = "";
         if (scmToken == ScmToken.GIT) {
-            String gitHash = "blob " + fileContent.length() + "\0" + fileContent;
-            scmVersionName = Hashing.getSHA1(gitHash.getBytes());
+            try {
+                String gitHash = "blob " + revision.getContent().length() + "\0" + revision.getContent();
+                scmVersionName = Hashing.getSHA1(gitHash.getBytes());
+            }
+            catch (VcsException ve){}
         }
         else if (scmToken == ScmToken.SUBVERSION) {
-            String gitHash = "blob " + fileContent.length() + "\0" + fileContent;
-            scmVersionName = Hashing.getSHA1(gitHash.getBytes());
+            scmVersionName = revision.getRevisionNumber().asString();
         }
         return scmVersionName;
     }
