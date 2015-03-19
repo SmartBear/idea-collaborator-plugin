@@ -20,8 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class Login implements Configurable {
     private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonCancel;
     private JButton testBttn;
     private JComboBox serverCmb;
     private JTextField usernameTxt;
@@ -65,18 +63,25 @@ public class Login implements Configurable {
 
     @Override
     public void apply() throws ConfigurationException {
-        persistValues();
+        if (validateFields()) {
+            persistValues();
+//            dispose();
+        }
+        else {
+            throw new ConfigurationException("Error communicating with the server.");
+        }
     }
 
     @Nullable
     @Override
     public String getHelpTopic() {
-        return "Enter the Smartbear Collaborator server login credentials";
+        return null;
     }
 
     @Override
     public boolean isModified() {
-        return false;
+        return ((persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER).compareTo(serverCmb.getSelectedItem().toString()) != 0) ||
+                (persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME).compareTo(usernameTxt.getText()) != 0));
     }
 
     private void initializeUI() {
@@ -163,15 +168,16 @@ public class Login implements Configurable {
                         "Connection refused:" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 result = false;
             }
-            if (response.getErrors() != null && !response.getErrors().isEmpty()){
-                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
-                        "\n" +
-                        "Reason:\n" +
-                        response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
-                result = false;
-            }
-            else if (response.getResult() != null){
-                loginTicket = (String)response.getResult().getValue();
+            if (result) {
+                if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
+                            "\n" +
+                            "Reason:\n" +
+                            response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                    result = false;
+                } else if (response.getResult() != null) {
+                    loginTicket = (String) response.getResult().getValue();
+                }
             }
         }
 

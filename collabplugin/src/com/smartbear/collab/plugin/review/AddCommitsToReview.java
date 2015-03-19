@@ -12,19 +12,10 @@ import com.smartbear.collab.common.model.JsonrpcCommandResponse;
 import com.smartbear.collab.common.model.impl.ChangeList;
 import com.smartbear.collab.common.model.impl.ScmToken;
 import com.smartbear.collab.util.ChangeListUtils;
-import git4idea.vfs.GitFileRevision;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.List;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 public class AddCommitsToReview extends JDialog {
     private JPanel contentPane;

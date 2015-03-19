@@ -2,7 +2,7 @@
 <module type="PLUGIN_MODULE" version="4">
   <component name="DevKit.ModuleBuildProperties" url="file://$MODULE_DIR$/META-INF/plugin.xml" />
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/out" />
+    <output url="file://$MODULE_DIR$/../loginplugin/out" />
     <output-test url="file:///test/loginplugin" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -15,7 +15,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/Git4Idea_6838.jar!/" />
+          <root url="jar://$MODULE_DIR$/../loginplugin/lib/Git4Idea_6838.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
