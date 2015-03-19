@@ -122,15 +122,21 @@ public class AddCommitsToReview extends JDialog {
 
     private void initializeClient(){
         String serverURL = persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER);
-        client = new Client(serverURL);
-        if (!client.hasCredentials()){
-            String username = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
-            if (!username.isEmpty()){
-                client.setUsername(username);
-            }
-            String ticketId = persistedProperties.getValue(CollabConstants.PROPERTY_TICKET_ID);
-            if (!ticketId.isEmpty()){
-                client.setTicketId(ticketId);
+        if (serverURL == null || serverURL.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Could not create the review \n\nReason:\n", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
+        }
+        else {
+            client = new Client(serverURL);
+            if (!client.hasCredentials()){
+                String username = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
+                if (!username.isEmpty()){
+                    client.setUsername(username);
+                }
+                String ticketId = persistedProperties.getValue(CollabConstants.PROPERTY_TICKET_ID);
+                if (!ticketId.isEmpty()){
+                    client.setTicketId(ticketId);
+                }
             }
         }
     }
