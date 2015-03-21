@@ -1,4 +1,4 @@
-package com.smartbear.collab.plugin.review;
+package com.smartbear.collab.plugin.review.ui;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.vcs.AbstractVcs;

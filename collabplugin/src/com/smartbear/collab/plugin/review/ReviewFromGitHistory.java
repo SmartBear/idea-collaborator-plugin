@@ -1,5 +1,6 @@
 package com.smartbear.collab.plugin.review;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -9,8 +10,12 @@ import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.history.*;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.smartbear.collab.client.Client;
+import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.impl.ScmToken;
+import com.smartbear.collab.plugin.review.ui.AddCommitsToReview;
 
+import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,6 +23,8 @@ import java.util.Map;
  * Created by mzumbado on 2/17/15.
  */
 public class ReviewFromGitHistory extends AnAction {
+    private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
+
     public void actionPerformed(AnActionEvent e) {
         VcsFileRevision[] revisions = e.getData(VcsDataKeys.VCS_FILE_REVISIONS);
         Map<VcsFileRevision, CommittedChangeList> changesMap = new LinkedHashMap<VcsFileRevision, CommittedChangeList>();
@@ -35,9 +42,11 @@ public class ReviewFromGitHistory extends AnAction {
 
         VcsKey vcsKey = VcsDataKeys.VCS.getData(e.getDataContext());
         ScmToken scmToken = ScmToken.fromIdeaValue(vcsKey.getName());
-        AddCommitsToReview dialog = new AddCommitsToReview(changesMap, rootPath, scmToken);
-        dialog.pack();
-        dialog.setVisible(true);
+        if (checkClient()) {
+            AddCommitsToReview dialog = new AddCommitsToReview(changesMap, rootPath, scmToken);
+            dialog.pack();
+            dialog.setVisible(true);
+        }
     }
 
     private CommittedChangeList getCommittedChangeList(Project project, DataContext dataContext, VcsRevisionNumber revisionNumber){
@@ -61,6 +70,46 @@ public class ReviewFromGitHistory extends AnAction {
         }
 
         return result;
+    }
+
+    private boolean checkClient(){
+        String serverURL = persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER);
+        if (serverURL == null || serverURL.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Collaborator Server not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartbear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        else {
+            Client client = new Client(serverURL);
+            if (!client.hasCredentials()){
+                String username = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
+                if (username != null && !username.isEmpty()){
+                    client.setUsername(username);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "Collaborator Server not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartbear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                String ticketId = persistedProperties.getValue(CollabConstants.PROPERTY_TICKET_ID);
+                if (ticketId != null && !ticketId.isEmpty()){
+                    client.setTicketId(ticketId);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "Collaborator Server not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartbear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                try {
+                    client.checkTicket();
+                }
+                catch (Exception e){
+                    JOptionPane.showMessageDialog(null, "Reason:\n\n" + e.getMessage(), "Add to review error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Collaborator Server not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartbear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return true;
     }
 
 }

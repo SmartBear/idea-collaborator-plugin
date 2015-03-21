@@ -227,6 +227,40 @@ public class Client {
         return result;
     }
 
+    public JsonrpcCommandResponse checkTicket() throws ServerURLException, CredentialsException, Exception{
+
+        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+
+        List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
+        methods.add(new Authenticate(username, ticketId));
+        try {
+
+            JsonrpcResponse response = sendRequest(methods);
+            result = response.getResults().get(0);
+            if (result.getErrors() != null && result.getErrors().size() > 0){
+                throw new ServerURLException(result.getErrors().get(0).getMessage());
+            }
+        }
+        catch (IllegalArgumentException iae) {
+            throw new ServerURLException(iae.getMessage());
+        }
+        catch (ProcessingException pe) {
+            if (pe.getCause().getClass().equals(ConnectException.class)){
+                throw new ServerURLException(pe.getCause().getMessage());
+            }
+            else {
+                throw new ServerURLException(pe.getMessage());
+            }
+        }
+        catch (NotFoundException nfe) {
+            throw new ServerURLException(nfe.getMessage());
+        }
+        catch (Exception e){
+            throw new CredentialsException(e.getMessage());
+        }
+        return result;
+    }
+
     public JsonrpcCommandResponse createReview(String creator, String title) throws ServerURLException, CredentialsException, Exception{
 
         JsonrpcCommandResponse result = new JsonrpcCommandResponse();
