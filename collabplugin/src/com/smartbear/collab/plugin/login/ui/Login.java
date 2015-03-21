@@ -80,8 +80,30 @@ public class Login implements Configurable {
 
     @Override
     public boolean isModified() {
-        return ((persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER).compareTo(serverCmb.getSelectedItem().toString()) != 0) ||
-                (persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME).compareTo(usernameTxt.getText()) != 0));
+        boolean result = true;
+        if (persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER) == null || persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER).isEmpty()){
+            if (serverCmb.getSelectedItem() == null){
+                result = result && true;
+            }
+            else {
+                result = result && false;
+            }
+        }
+        else {
+            result = result && persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER).compareTo(serverCmb.getSelectedItem().toString()) == 0;
+        }
+        if (persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME) == null || persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME).isEmpty()){
+            if (usernameTxt.getText() == null || usernameTxt.getText().isEmpty()){
+                result = result && true;
+            }
+            else {
+                result = result && false;
+            }
+        }
+        else {
+            result = result && persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME).compareTo(usernameTxt.getText()) == 0;
+        }
+        return result;
     }
 
     private void initializeUI() {
@@ -128,7 +150,7 @@ public class Login implements Configurable {
 
     private boolean validateFields(){
         boolean result = true;
-        if (result && (serverCmb == null || serverCmb.getSelectedItem().toString().isEmpty())){
+        if (result && (serverCmb == null || serverCmb.getSelectedItem() == null || serverCmb.getSelectedItem().toString().isEmpty())){
             JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n" +
                     "\n" +
                     "Reason:\n" +
