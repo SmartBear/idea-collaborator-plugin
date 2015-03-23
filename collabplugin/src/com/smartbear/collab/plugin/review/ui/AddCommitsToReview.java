@@ -182,10 +182,6 @@ public class AddCommitsToReview extends JDialog {
                     Map<String, byte[]> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()));
                     for (Map.Entry<String, byte[]> zip : zips.entrySet()){
                         zipFilesSent = zipFilesSent && client.sendZip(zip);
-//                        File file = new File(zip.getKey());
-//                        FileOutputStream fos = new FileOutputStream(file);
-//                        fos.write(zip.getValue());
-//                        fos.close();
                     }
                     JsonrpcCommandResponse response = client.createReview(creator, titleTxt.getText());
                     if (response.getErrors() == null || response.getErrors().isEmpty()) {
@@ -212,6 +208,10 @@ public class AddCommitsToReview extends JDialog {
                 String selectedReview = (String)existingReviewsLst.getSelectedValue();
                 reviewId = selectedReview.substring("Review #".length(), selectedReview.indexOf(':'));
                 reviewTitle = selectedReview.substring(selectedReview.indexOf(':'));
+                Map<String, byte[]> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()));
+                for (Map.Entry<String, byte[]> zip : zips.entrySet()){
+                    zipFilesSent = zipFilesSent && client.sendZip(zip);
+                }
             }
         }
 
