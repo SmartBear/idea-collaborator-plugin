@@ -38,14 +38,8 @@
 
   <actions>
     <!-- Add your actions here -->
-      <!--group id="smartbearGroup" text="Smartbear Collaborator" description="Smartbear Collaborator" popup="true" >
-          <add-to-group group-id="VcsGroups" anchor="last" />
-          <action id="LoginActn2" class="com.smartbear.collab.plugin.login.LoginActn" text="Server Login"
-                  description="Login to server">
-          </action>
-      </group-->
       <action id="reviewFromGitHistory" class="com.smartbear.collab.plugin.review.ReviewFromGitHistory"
-              text="Add to review" description="Add to Smartbear Collaborator Review">
+              text="Add to review" description="Add to Smartbear Collaborator Review" icon="/icons/addrev_wiz.png">
           <add-to-group group-id="VcsHistoryActionsGroup" anchor="last"/>
       </action>
   </actions>
