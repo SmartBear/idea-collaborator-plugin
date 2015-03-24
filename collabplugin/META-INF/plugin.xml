@@ -1,8 +1,8 @@
 <idea-plugin version="2">
   <id>com.smartbear.collab.plugin</id>
   <name>Smartbear Collaborator</name>
-  <version>0.3</version>
-  <vendor email="support@yourcompany.com" url="http://www.smartbear.com">Smartbear</vendor>
+  <version>0.4</version>
+  <vendor email="support@smartbear.com" url="http://www.smartbear.com">Smartbear</vendor>
 
   <description><![CDATA[
       Smartbear Collaborator code reviews plugin.<br>
@@ -10,8 +10,8 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      New Smartbear Collaborator menu added.<br>
-      <!--em>most HTML tags may be used</em-->
+      Added an icon to the Add to review menu option.
+
     ]]>
   </change-notes>
 
