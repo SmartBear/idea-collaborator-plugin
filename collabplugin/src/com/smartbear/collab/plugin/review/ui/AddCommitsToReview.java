@@ -219,7 +219,12 @@ public class AddCommitsToReview extends JDialog {
             try {
                 JsonrpcCommandResponse addFilesResponse = client.addFilesToReview(reviewId, changeLists);
                 if (addFilesResponse.getErrors() == null || addFilesResponse.getErrors().isEmpty()){
-                    JOptionPane.showMessageDialog(null, "Review # " + reviewId + ": " + reviewTitle, "Review created", JOptionPane.INFORMATION_MESSAGE);
+                    if (createNewReviewRdBttn.isSelected()) {
+                        JOptionPane.showMessageDialog(null, "Review # " + reviewId + ": " + reviewTitle, "Review created", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else if (addToExistingReviewRdBttn.isSelected()) {
+                        JOptionPane.showMessageDialog(null, "Add changes to Review # " + reviewId + ": " + reviewTitle, "Review added", JOptionPane.INFORMATION_MESSAGE);
+                    }
                     dispose();
                 }
             }
