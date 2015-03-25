@@ -185,8 +185,15 @@ public class Client {
         catch (Exception e){
             throw new CredentialsException(e.getMessage());
         }
-        this.username = username;
-        this.ticketId = (String)result.getResult().getValue();
+        if (result.getErrors() == null || result.getErrors().isEmpty()) {
+            this.username = username;
+            this.ticketId = (String) result.getResult().getValue();
+        }
+        else {
+            this.username = "";
+            this.ticketId = "";
+            throw new CredentialsException(result.getErrors().get(0).getMessage());
+        }
         return result;
     }
 

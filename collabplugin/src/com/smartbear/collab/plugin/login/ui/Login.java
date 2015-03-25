@@ -31,6 +31,7 @@ public class Login implements Configurable {
 
     private Client client;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
+    private boolean passwordChanged = false;
 
     private static final int RECENT_SERVERS_SIZE = 10;
 
@@ -55,8 +56,6 @@ public class Login implements Configurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        // lazily initialized to ensure that disposeUIResources() will be called, if
-        // tree builder was created
         initializeUI();
         return contentPane;
     }
@@ -65,10 +64,11 @@ public class Login implements Configurable {
     public void apply() throws ConfigurationException {
         if (validateFields()) {
             persistValues();
-//            dispose();
+            passwordChanged = false;
         }
         else {
-            throw new ConfigurationException("Error communicating with the server.");
+            passwordChanged = false;
+            throw new ConfigurationException("Error authenticating with the server.");
         }
     }
 
@@ -80,57 +80,61 @@ public class Login implements Configurable {
 
     @Override
     public boolean isModified() {
-        boolean result = true;
+        boolean result = false;
         if (persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER) == null || persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER).isEmpty()){
-            if (serverCmb.getSelectedItem() == null){
-                result = result && false;
+            if (serverCmb.getSelectedItem() == null || serverCmb.getSelectedItem().toString().isEmpty()){
+                result = result || false;
             }
             else {
-                result = result && true;
+                result = result || true;
             }
         }
         else {
-            result = result && persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER).compareTo(serverCmb.getSelectedItem().toString()) != 0;
+            if (serverCmb.getSelectedItem() == null || serverCmb.getSelectedItem().toString().isEmpty()){
+                result = result || false;
+            }
+            else {
+                result = result || persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER).compareTo(serverCmb.getSelectedItem().toString()) != 0;
+            }
         }
         if (persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME) == null || persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME).isEmpty()){
             if (usernameTxt.getText() == null || usernameTxt.getText().isEmpty()){
-                result = result && false;
+                result = result || false;
             }
             else {
-                result = result && true;
+                result = result || true;
             }
         }
         else {
-            result = result && persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME).compareTo(usernameTxt.getText()) != 0;
+            result = result || persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME).compareTo(usernameTxt.getText()) != 0;
         }
+        result = result || passwordChanged;
         return result;
     }
 
     private void initializeUI() {
-//        setContentPane(contentPane);
-//        setModal(true);
-//        getRootPane().setDefaultButton(buttonOK);
 
         testBttn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onTest();
             }
         });
-        
-// call onCancel() when cross is clicked
-/*        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                onCancel();
+
+        passwordTxt.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                passwordChanged = true;
+            }
+            @Override
+            public void keyPressed(KeyEvent e) {
+                //Do Nothing
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                //Do Nothing
             }
         });
-*/
-// call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         initializeValues();
     }
@@ -180,7 +184,7 @@ public class Login implements Configurable {
                 JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
                                 "\n" +
                                 "Reason:\n" +
-                                "Invalid username and or password.", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                                ce.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 result = false;
             }
             catch (Exception e) {
@@ -204,13 +208,6 @@ public class Login implements Configurable {
         }
 
         return result;
-    }
-
-    private void onOK() {
-        if (validateFields()) {
-            persistValues();
-//            dispose();
-        }
     }
 
     private void persistValues(){
@@ -245,15 +242,4 @@ public class Login implements Configurable {
         }
     }
 
-    private void onCancel() {
-// add your code here if necessary
-//        dispose();
-    }
-/*
-    public static void main(String[] args) {
-        Login dialog = new Login();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
-    }*/
 }
