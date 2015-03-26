@@ -223,7 +223,7 @@ public class AddCommitsToReview extends JDialog {
                         JOptionPane.showMessageDialog(null, "Review # " + reviewId + ": " + reviewTitle, "Review created", JOptionPane.INFORMATION_MESSAGE);
                     }
                     else if (addToExistingReviewRdBttn.isSelected()) {
-                        JOptionPane.showMessageDialog(null, "Add changes to Review # " + reviewId + ": " + reviewTitle, "Review added", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Changes added to review # " + reviewId + ": " + reviewTitle, "Changes added to review", JOptionPane.INFORMATION_MESSAGE);
                     }
                     dispose();
                 }
@@ -232,7 +232,12 @@ public class AddCommitsToReview extends JDialog {
                 JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\n" + sue.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
             }
             catch (Exception e){
-                JOptionPane.showMessageDialog(null, "Could not create the review \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                if (createNewReviewRdBttn.isSelected()) {
+                    JOptionPane.showMessageDialog(null, "Could not create the review \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (addToExistingReviewRdBttn.isSelected()) {
+                    JOptionPane.showMessageDialog(null, "Could not add to the review \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
 
         }
