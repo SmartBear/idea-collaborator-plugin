@@ -1,17 +1,15 @@
 <idea-plugin version="2">
   <id>com.smartbear.collab.plugin</id>
-  <name>Smartbear Collaborator</name>
-  <version>0.5</version>
-  <vendor email="support@smartbear.com" url="http://www.smartbear.com">Smartbear</vendor>
+  <name>SmartBear Collaborator</name>
+  <version>0.6</version>
+  <vendor email="support@smartbear.com" url="http://www.smartbear.com">SmartBear</vendor>
 
   <description><![CDATA[
-      Smartbear Collaborator code reviews plugin.<br>
-      <!--em>most HTML tags may be used</em-->
+      SmartBear Collaborator plugin (create/update reviews from git/svn history).
     ]]></description>
 
   <change-notes><![CDATA[
       Added an icon to the Add to review menu option.
-
     ]]>
   </change-notes>
 
@@ -24,7 +22,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
-      <applicationConfigurable groupId="tools" displayName="Smartbear Collaborator" id="smartbear.collaborator" instance="com.smartbear.collab.plugin.login.ui.Login" />
+      <applicationConfigurable groupId="tools" displayName="SmartBear Collaborator" id="smartbear.collaborator" instance="com.smartbear.collab.plugin.login.ui.Login" />
 
   </extensions>
 
@@ -39,7 +37,7 @@
   <actions>
     <!-- Add your actions here -->
       <action id="reviewFromGitHistory" class="com.smartbear.collab.plugin.review.ReviewFromGitHistory"
-              text="Add to review" description="Add to Smartbear Collaborator Review" icon="/icons/addrev_wiz.png">
+              text="Add to review" description="Add to Collaborator review" icon="/icons/addrev_wiz.png">
           <add-to-group group-id="VcsHistoryActionsGroup" anchor="last"/>
       </action>
   </actions>

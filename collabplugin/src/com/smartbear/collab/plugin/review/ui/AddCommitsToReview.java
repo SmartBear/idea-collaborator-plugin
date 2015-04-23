@@ -104,7 +104,7 @@ public class AddCommitsToReview extends JDialog {
             }
         });
 
-// call onCancel() when cross is clicked
+        // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -112,7 +112,7 @@ public class AddCommitsToReview extends JDialog {
             }
         });
 
-// call onCancel() on ESCAPE
+        // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
@@ -123,7 +123,7 @@ public class AddCommitsToReview extends JDialog {
     private void initializeClient(){
         String serverURL = persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER);
         if (serverURL == null || serverURL.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Could not create the review \n\nReason:\n", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Collaborator server URL is not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartBear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
             dispose();
         }
         else {
@@ -188,7 +188,7 @@ public class AddCommitsToReview extends JDialog {
                         reviewId = ((Integer) response.getResult().getValue()).toString();
                     }
                     else {
-                        JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\n" + response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Review creation error. \n\nReason:\n" + response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                     }
 
                 }
@@ -196,7 +196,7 @@ public class AddCommitsToReview extends JDialog {
                     JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\n" + sue.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 }
                 catch (Exception e){
-                    JOptionPane.showMessageDialog(null, "Could not create the review \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Review creation error. \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -220,10 +220,10 @@ public class AddCommitsToReview extends JDialog {
                 JsonrpcCommandResponse addFilesResponse = client.addFilesToReview(reviewId, changeLists);
                 if (addFilesResponse.getErrors() == null || addFilesResponse.getErrors().isEmpty()){
                     if (createNewReviewRdBttn.isSelected()) {
-                        JOptionPane.showMessageDialog(null, "Review # " + reviewId + ": " + reviewTitle, "Review created", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Review #" + reviewId + ": " + reviewTitle, "Review created", JOptionPane.INFORMATION_MESSAGE);
                     }
                     else if (addToExistingReviewRdBttn.isSelected()) {
-                        JOptionPane.showMessageDialog(null, "Changes added to review # " + reviewId + ": " + reviewTitle, "Changes added to review", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Changes added to review #" + reviewId + ": " + reviewTitle, "Changes added to review", JOptionPane.INFORMATION_MESSAGE);
                     }
                     dispose();
                 }
@@ -233,10 +233,10 @@ public class AddCommitsToReview extends JDialog {
             }
             catch (Exception e){
                 if (createNewReviewRdBttn.isSelected()) {
-                    JOptionPane.showMessageDialog(null, "Could not create the review \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Could not create the review. \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 }
                 else if (addToExistingReviewRdBttn.isSelected()) {
-                    JOptionPane.showMessageDialog(null, "Could not add to the review \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Could not add to the review. \n\nReason:\n" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
 
@@ -246,7 +246,7 @@ public class AddCommitsToReview extends JDialog {
         String result = "";
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText().isEmpty()){
-                JOptionPane.showMessageDialog(null, "Must provide a title for the review", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You must provide a title for the review", "Error", JOptionPane.ERROR_MESSAGE);
             }
             else {
                 result = titleTxt.getText();
@@ -262,12 +262,12 @@ public class AddCommitsToReview extends JDialog {
     private void refreshReviews(){
         String username = (String)persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
         if (username == null || username.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\nEnter a username", "Collaborator Error", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(null,  "Collaborator username is not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartBear Collaborator\nand set the server parameters.", "Collaborator Error", JOptionPane.OK_OPTION);
             dispose();
         }
         String ticketId = (String)persistedProperties.getValue(CollabConstants.PROPERTY_TICKET_ID);
         if (ticketId == null || ticketId.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\nEnter a username", "Collaborator Error", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(null, "Collaborator auth ticket invalid.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartBear Collaborator\nand test your connection.", "Collaborator Error", JOptionPane.OK_OPTION);
             dispose();
         }
         try {
@@ -275,13 +275,10 @@ public class AddCommitsToReview extends JDialog {
 
             JsonrpcCommandResponse actionItems = client.getActionItems();
             java.util.List<LinkedHashMap<String, String>> aitems = (java.util.List)actionItems.getResult().getValue();
-//            List cList = new List();
             DefaultListModel dlm = new DefaultListModel();
             for (LinkedHashMap<String, String> item : aitems){
                 dlm.addElement(item.get("text").substring(item.get("text").indexOf("Review #")));
-//                cList.add(item.get("text"));
             }
-//            existingReviewsLst.add(cList)
             existingReviewsLst.setModel(dlm);
         }
         catch (Exception e){
@@ -289,7 +286,7 @@ public class AddCommitsToReview extends JDialog {
         }
     }
 
-    private void onAddToExistingReview(){
+    private void onAddToExistingReview() {
         if (addToExistingReviewRdBttn.isSelected()) {
             this.refreshReviews();
         } else {
@@ -297,11 +294,4 @@ public class AddCommitsToReview extends JDialog {
             defaultListModel.removeAllElements();
         }
     }
-/*
-    public static void main(String[] args) {
-        AddCommitsToReview dialog = new AddCommitsToReview();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
-    }*/
 }

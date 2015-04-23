@@ -155,7 +155,7 @@ public class Login implements Configurable {
     private boolean validateFields(){
         boolean result = true;
         if (result && (serverCmb == null || serverCmb.getSelectedItem() == null || serverCmb.getSelectedItem().toString().isEmpty())){
-            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n" +
+            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator server \n" +
                     "\n" +
                     "Reason:\n" +
                     "could not build URL", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
@@ -165,7 +165,7 @@ public class Login implements Configurable {
                 client = new Client(serverCmb.getSelectedItem().toString());
         }
         if (result && usernameTxt.getText().isEmpty()){
-            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n\nReason:\nEnter a username", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator server \n\nReason:\nEnter a username", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
             result = false;
         }
         else {
@@ -174,21 +174,21 @@ public class Login implements Configurable {
                 response = client.login(usernameTxt.getText(), new String(passwordTxt.getPassword()));
             }
             catch (ServerURLException sue) {
-                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server \n" +
+                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator server \n" +
                         "\n" +
                         "Reason:\n" +
                         "Connection refused:" + sue.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 result = false;
             }
             catch (CredentialsException ce) {
-                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
+                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator server\n" +
                                 "\n" +
                                 "Reason:\n" +
                                 ce.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
                 result = false;
             }
             catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
+                JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator server\n" +
                         "\n" +
                         "Reason:\n" +
                         "Connection refused:" + e.getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
@@ -196,7 +196,7 @@ public class Login implements Configurable {
             }
             if (result) {
                 if (response.getErrors() != null && !response.getErrors().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator Server\n" +
+                    JOptionPane.showMessageDialog(null, "Could not verify connection to Collaborator server\n" +
                             "\n" +
                             "Reason:\n" +
                             response.getErrors().get(0).getMessage(), "Collaborator Error", JOptionPane.ERROR_MESSAGE);
@@ -238,7 +238,7 @@ public class Login implements Configurable {
 
     private void onTest() {
         if (validateFields()){
-            JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator Server", "Test", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator server", "Test", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

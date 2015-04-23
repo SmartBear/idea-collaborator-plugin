@@ -75,7 +75,7 @@ public class ReviewFromGitHistory extends AnAction {
     private boolean checkClient(){
         String serverURL = persistedProperties.getValue(CollabConstants.PROPERTY_SELECTED_SERVER);
         if (serverURL == null || serverURL.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Collaborator Server not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartbear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Collaborator server URL is not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartBear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         else {
@@ -86,7 +86,7 @@ public class ReviewFromGitHistory extends AnAction {
                     client.setUsername(username);
                 }
                 else {
-                    JOptionPane.showMessageDialog(null, "Collaborator Server not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartbear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Collaborator username is not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartBear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 String ticketId = persistedProperties.getValue(CollabConstants.PROPERTY_TICKET_ID);
@@ -94,19 +94,19 @@ public class ReviewFromGitHistory extends AnAction {
                     client.setTicketId(ticketId);
                 }
                 else {
-                    JOptionPane.showMessageDialog(null, "Collaborator Server not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartbear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Collaborator auth ticket invalid.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartBear Collaborator\nand test your connection.", "Add to review error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 try {
                     client.checkTicket();
                 }
                 catch (Exception e){
-                    JOptionPane.showMessageDialog(null, "Reason:\n\n" + e.getMessage(), "Add to review error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Unable to authenticate with Collaborator server. Reason:\n\n" + e.getMessage(), "Add to review error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
             else {
-                JOptionPane.showMessageDialog(null, "Collaborator Server not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartbear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Collaborator connection properties not set.\n\nGo to:\nSettings...\n\tTools\n\t\tSmartBear Collaborator\nand set the server parameters.", "Add to review error", JOptionPane.ERROR_MESSAGE);
             }
         }
         return true;

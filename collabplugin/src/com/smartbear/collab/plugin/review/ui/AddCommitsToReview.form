@@ -155,7 +155,7 @@
             </constraints>
             <properties>
               <font style="1"/>
-              <text value="Select a Review"/>
+              <text value="Select a review"/>
             </properties>
           </component>
           <vspacer id="41b55">
