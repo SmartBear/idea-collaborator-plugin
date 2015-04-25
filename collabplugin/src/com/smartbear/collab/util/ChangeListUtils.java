@@ -9,11 +9,13 @@ import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.smartbear.collab.common.model.CollabConstants;
 import com.smartbear.collab.common.model.impl.*;
+import jetbrains.buildServer.messages.serviceMessages.Message;
 
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -21,14 +23,12 @@ import java.util.zip.ZipOutputStream;
  * Created by mzumbado on 2/26/15.
  */
 public class ChangeListUtils {
-
     public static List<ChangeList> VcsFileRevisionToChangeList(String rootDirectory, ScmToken scmToken, Map<VcsFileRevision, CommittedChangeList> commits) {
         List<ChangeList> changeLists =  new ArrayList<ChangeList>();
         for (Map.Entry<VcsFileRevision, CommittedChangeList> commit : commits.entrySet()){
             VcsFileRevision fileRevision = commit.getKey();
             CommittedChangeList committedChangeList = commit.getValue();
 
-//            String scmPath = fileRevision.getChangedRepositoryPath().toString();
             CommitInfo commitInfo = new CommitInfo(fileRevision.getCommitMessage(), fileRevision.getRevisionDate(), fileRevision.getAuthor(), false, fileRevision.getRevisionNumber().asString(), "");
             List<Version> versions = new ArrayList<Version>();
             for (Change change : committedChangeList.getChanges()){
@@ -48,7 +48,7 @@ public class ChangeListUtils {
                     String baseMd5 = "";
                     String baseScmPath = getScmPath(rootDirectory, baseRevision.getFile().getPath());
                     try {
-                        baseMd5 = Hashing.getMD5(baseRevision.getContent().getBytes());
+                        baseMd5 = getMD5(baseRevision.getContent().getBytes());
                     }
                     catch (VcsException ve){
 
@@ -61,7 +61,7 @@ public class ChangeListUtils {
                 //Version
                 String localPath = change.getAfterRevision().getFile().getPath();
                 String scmPath = getScmPath(rootDirectory, change.getAfterRevision().getFile().getPath());
-                String md5 = Hashing.getMD5(fileContent.getBytes());
+                String md5 = getMD5(fileContent.getBytes());
                 String action = change.getFileStatus().getId();
                 String scmVersionName = getScmVersionName(scmToken, change.getAfterRevision());
                 Version version = new Version(scmPath, md5, scmVersionName, localPath, action, CollabConstants.SOURCE_TYPE_SCM, baseVersion);
@@ -80,7 +80,7 @@ public class ChangeListUtils {
         if (scmToken == ScmToken.GIT) {
             try {
                 String gitHash = "blob " + revision.getContent().length() + "\0" + revision.getContent();
-                scmVersionName = Hashing.getSHA1(gitHash.getBytes());
+                scmVersionName = getSHA1(gitHash.getBytes());
             }
             catch (VcsException ve){}
         }
@@ -104,7 +104,7 @@ public class ChangeListUtils {
                     catch (VcsException ve) {
 
                     }
-                    String baseMd5 = Hashing.getMD5(baseFileContent.getBytes());
+                    String baseMd5 = getMD5(baseFileContent.getBytes());
                     ZipEntry baseZipEntry = new ZipEntry(baseMd5);
 
                     try {
@@ -123,7 +123,7 @@ public class ChangeListUtils {
                 catch (VcsException ve) {
 
                 }
-                String md5 = Hashing.getMD5(fileContent.getBytes());
+                String md5 = getMD5(fileContent.getBytes());
                 ZipEntry zipEntry = new ZipEntry(md5);
 
                 try {
@@ -183,5 +183,33 @@ public class ChangeListUtils {
             result.add(svnexe);
         }
         return result;
+    }
+
+    private static String getMD5( final byte[] data ) {
+        MessageDigest md5 = null;
+        try {
+            MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException nsae) {
+            Logger log = Logger.getLogger(ChangeListUtils.class.toString());
+            log.severe("MD5 hashing algorithm is not available! This almost certainly prevents correct operation of this plugin!");
+            return "";
+        }
+        return getHash(data, md5);
+    }
+
+    private static String getSHA1( final byte[] data ) {
+        MessageDigest sha1 = null;
+        try {
+            sha1 = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException nsae) {
+            Logger log = Logger.getLogger(ChangeListUtils.class.toString());
+            log.severe("SHA1 hashing algorithm is not available! This almost certainly prevents correct operation of this plugin!");
+            return "";
+        }
+        return getHash(data, sha1);
+    }
+
+    private static String getHash(final byte[] data, MessageDigest algo) {
+        return javax.xml.bind.DatatypeConverter.printHexBinary(algo.digest(data));
     }
 }

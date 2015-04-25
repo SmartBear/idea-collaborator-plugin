@@ -28,6 +28,7 @@ public class Login implements Configurable {
     private List<String> recentServers = new ArrayList<String>();
     private JCheckBox proxyChck;
     private JButton proxyBttn;
+    private JButton refreshAuthTicketButton;
 
     private Client client;
     private PropertiesComponent persistedProperties = PropertiesComponent.getInstance();
@@ -37,14 +38,10 @@ public class Login implements Configurable {
 
     @Override
     public void disposeUIResources() {
-//        Disposer.dispose(myTreeBuilder);
-//        myTrustManager.removeListener(this);
     }
 
     @Override
     public void reset() {
-//        Disposer.dispose(myTreeBuilder);
-//        myTrustManager.removeListener(this);
     }
 
     @Nls
@@ -115,9 +112,17 @@ public class Login implements Configurable {
     private void initializeUI() {
 
         testBttn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 onTest();
             }
+        });
+
+        refreshAuthTicketButton.addActionListener(new ActionListener() {
+                                                      @Override
+                                                      public void actionPerformed(ActionEvent e) {
+                                                          onRefresh();
+                                                      }
         });
 
         passwordTxt.addKeyListener(new KeyListener() {
@@ -212,7 +217,6 @@ public class Login implements Configurable {
 
     private void persistValues(){
         persistedProperties.setValue(CollabConstants.PROPERTY_USERNAME, usernameTxt.getText());
-//            persistedProperties.setValue("password", new String(passwordTxt.getPassword()));
         if (recentServers.contains(serverCmb.getSelectedItem().toString())){
             // if the server exists in the list
             if (recentServers.indexOf(serverCmb.getSelectedItem().toString()) != 0){
@@ -239,7 +243,14 @@ public class Login implements Configurable {
     private void onTest() {
         if (validateFields()){
             JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator server", "Test", JOptionPane.INFORMATION_MESSAGE);
+            persistValues();
         }
     }
 
+    private void onRefresh() {
+        if (validateFields()) {
+            JOptionPane.showMessageDialog(null, "Successfully connected to the Collaborator server", "Auth ticket refreshed", JOptionPane.INFORMATION_MESSAGE);
+            persistValues();
+        }
+    }
 }

@@ -27,6 +27,10 @@ public class ReviewFromGitHistory extends AnAction {
 
     public void actionPerformed(AnActionEvent e) {
         VcsFileRevision[] revisions = e.getData(VcsDataKeys.VCS_FILE_REVISIONS);
+        if (revisions.length == 0) {
+            JOptionPane.showMessageDialog(null, "No revisions found for " + VcsDataKeys.VCS_FILE_REVISIONS, "Add to review error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         Map<VcsFileRevision, CommittedChangeList> changesMap = new LinkedHashMap<VcsFileRevision, CommittedChangeList>();
         VirtualFile anyFile = null;
         for (VcsFileRevision vcsFileRevision : revisions){
@@ -37,12 +41,17 @@ public class ReviewFromGitHistory extends AnAction {
             }
         }
 
-        ProjectLevelVcsManager projectLevelVcsManager = ProjectLevelVcsManager.getInstance(e.getProject());
-        String rootPath = projectLevelVcsManager.getVcsRootFor(anyFile).getCanonicalPath();
-
         VcsKey vcsKey = VcsDataKeys.VCS.getData(e.getDataContext());
         ScmToken scmToken = ScmToken.fromIdeaValue(vcsKey.getName());
         if (checkClient()) {
+            ProjectLevelVcsManager projectLevelVcsManager = ProjectLevelVcsManager.getInstance(e.getProject());
+            VirtualFile vcsRoot = projectLevelVcsManager.getVcsRootFor(anyFile);
+            if (vcsRoot == null) {
+                JOptionPane.showMessageDialog(null, "Can't get SCM root for: " + anyFile.getCanonicalPath(), "Add to review error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String rootPath = vcsRoot.getCanonicalPath();
+
             AddCommitsToReview dialog = new AddCommitsToReview(changesMap, rootPath, scmToken);
             dialog.pack();
             dialog.setVisible(true);
