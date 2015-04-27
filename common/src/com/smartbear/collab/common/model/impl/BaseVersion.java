@@ -20,6 +20,8 @@ public class BaseVersion {
         this.scmPath = scmPath;
     }
 
+    // though unused in plugin code, these methods are leveraged by Jackson to make JSON serializations:
+
     public String getAction() {
         return action;
     }

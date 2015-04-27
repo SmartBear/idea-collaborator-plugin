@@ -16,6 +16,8 @@ public class Credentials implements JsonrpcArgs {
         this.password = password;
     }
 
+    // though unused in plugin code, these methods are leveraged by Jackson to make JSON serializations:
+
     public String getLogin() {
         return login;
     }

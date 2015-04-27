@@ -13,6 +13,8 @@ public abstract class JsonrpcCommand implements Serializable {
     @JsonProperty("args")
     private JsonrpcArgs args;
 
+    // though unused in plugin code, the get* methods are leveraged by Jackson to make JSON serializations:
+
     public String getCommand() {
         return command;
     }

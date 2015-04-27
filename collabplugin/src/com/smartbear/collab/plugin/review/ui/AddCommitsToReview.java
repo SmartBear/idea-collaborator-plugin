@@ -285,13 +285,4 @@ public class AddCommitsToReview extends JDialog {
 
         }
     }
-
-    private void onAddToExistingReview() {
-        if (addToExistingReviewRdBttn.isSelected()) {
-            this.refreshReviews();
-        } else {
-            DefaultListModel defaultListModel = (DefaultListModel) existingReviewsLst.getModel();
-            defaultListModel.removeAllElements();
-        }
-    }
 }

@@ -20,6 +20,8 @@ public class ChangeList {
         this.versions = versions;
     }
 
+    // though unused in plugin code, these methods are leveraged by Jackson to make JSON serializations:
+
     public ScmToken getScmToken() {
         return scmToken;
     }
@@ -36,14 +38,6 @@ public class ChangeList {
         this.scmConnectionParameters = scmConnectionParameters;
     }
 
-/*    public String getZipName() {
-        return zipName;
-    }
-
-    public void setZipName(String zipName) {
-        this.zipName = zipName;
-    }
-*/
     public CommitInfo getCommitInfo() {
         return commitInfo;
     }

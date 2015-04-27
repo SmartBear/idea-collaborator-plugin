@@ -16,6 +16,8 @@ public class AddFilesArgs implements JsonrpcArgs {
         this.changelists = changelists;
     }
 
+    // though unused in plugin code, these methods are leveraged by Jackson to make JSON serializations:
+
     public String getReviewId() {
         return reviewId;
     }

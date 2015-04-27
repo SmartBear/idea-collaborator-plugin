@@ -14,6 +14,8 @@ public class AuthenticateArgs implements JsonrpcArgs {
         this.ticket = ticket;
     }
 
+    // though unused in plugin code, these methods are leveraged by Jackson to make JSON serializations:
+
     public String getLogin() {
         return login;
     }

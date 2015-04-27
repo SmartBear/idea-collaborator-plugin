@@ -142,7 +142,7 @@ public class Client {
 
     public JsonrpcCommandResponse login(String username, String password) throws ServerURLException, CredentialsException, Exception{
 
-        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+        JsonrpcCommandResponse result;
 
         List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
         methods.add(new GetLoginTicket(username, password));
@@ -183,7 +183,7 @@ public class Client {
 
     public JsonrpcCommandResponse getActionItems() throws ServerURLException, CredentialsException, Exception{
 
-        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+        JsonrpcCommandResponse result;
 
         List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
         methods.add(new Authenticate(username, ticketId));
@@ -220,7 +220,7 @@ public class Client {
 
     public JsonrpcCommandResponse checkTicket() throws ServerURLException, CredentialsException, Exception{
 
-        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+        JsonrpcCommandResponse result;
 
         List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
         methods.add(new Authenticate(username, ticketId));
@@ -254,7 +254,7 @@ public class Client {
 
     public JsonrpcCommandResponse createReview(String creator, String title) throws ServerURLException, CredentialsException, Exception{
 
-        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+        JsonrpcCommandResponse result;
 
         List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
         methods.add(new Authenticate(username, ticketId));
@@ -291,7 +291,7 @@ public class Client {
 
     public JsonrpcCommandResponse addFilesToReview(String reviewId, List<ChangeList> changeLists) throws ServerURLException, CredentialsException, Exception{
 
-        JsonrpcCommandResponse result = new JsonrpcCommandResponse();
+        JsonrpcCommandResponse result;
 
         List<JsonrpcCommand> methods = new ArrayList<JsonrpcCommand>();
         methods.add(new Authenticate(username, ticketId));

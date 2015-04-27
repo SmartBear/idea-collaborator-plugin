@@ -22,6 +22,8 @@ public class CommitInfo {
         this.hostGuid = hostGuid;
     }
 
+    // though unused in plugin code, these methods are leveraged by Jackson to make JSON serializations:
+
     public String getComment() {
         return comment;
     }
