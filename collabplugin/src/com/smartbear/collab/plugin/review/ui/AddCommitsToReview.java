@@ -173,7 +173,7 @@ public class AddCommitsToReview extends JDialog {
 
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){
-
+                JOptionPane.showMessageDialog(null, "Review creation error: you must give your new review a title.", "Collaborator Error", JOptionPane.ERROR_MESSAGE);
             }
             else {
                 String creator = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
@@ -207,7 +207,7 @@ public class AddCommitsToReview extends JDialog {
             else {
                 String selectedReview = (String)existingReviewsLst.getSelectedValue();
                 reviewId = selectedReview.substring("Review #".length(), selectedReview.indexOf(':'));
-                reviewTitle = selectedReview.substring(selectedReview.indexOf(':'));
+                reviewTitle = selectedReview.substring(selectedReview.indexOf(':') + 1);
                 Map<String, byte[]> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()));
                 for (Map.Entry<String, byte[]> zip : zips.entrySet()){
                     zipFilesSent = zipFilesSent && client.sendZip(zip);
@@ -220,7 +220,7 @@ public class AddCommitsToReview extends JDialog {
                 JsonrpcCommandResponse addFilesResponse = client.addFilesToReview(reviewId, changeLists);
                 if (addFilesResponse.getErrors() == null || addFilesResponse.getErrors().isEmpty()){
                     if (createNewReviewRdBttn.isSelected()) {
-                        JOptionPane.showMessageDialog(null, "Review #" + reviewId + ": " + reviewTitle, "Review created", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Review created, #" + reviewId + ": " + reviewTitle, "Review created", JOptionPane.INFORMATION_MESSAGE);
                     }
                     else if (addToExistingReviewRdBttn.isSelected()) {
                         JOptionPane.showMessageDialog(null, "Changes added to review #" + reviewId + ": " + reviewTitle, "Changes added to review", JOptionPane.INFORMATION_MESSAGE);

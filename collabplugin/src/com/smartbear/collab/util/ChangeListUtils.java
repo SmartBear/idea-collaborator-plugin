@@ -188,7 +188,7 @@ public class ChangeListUtils {
     private static String getMD5( final byte[] data ) {
         MessageDigest md5 = null;
         try {
-            MessageDigest.getInstance("MD5");
+            md5 = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException nsae) {
             Logger log = Logger.getLogger(ChangeListUtils.class.toString());
             log.severe("MD5 hashing algorithm is not available! This almost certainly prevents correct operation of this plugin!");
