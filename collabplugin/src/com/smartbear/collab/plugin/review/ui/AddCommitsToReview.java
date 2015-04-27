@@ -75,7 +75,7 @@ public class AddCommitsToReview extends JDialog {
                 if (addToExistingReviewRdBttn.isSelected()){
                     refreshReviewsBttn.setEnabled(true);
                     existingReviewsLst.setEnabled(true);
-                    titleTxt.setEnabled(true);
+                    titleTxt.setEnabled(false);
                     refreshReviewsBttn.doClick();
                 }
                 else {
@@ -92,7 +92,7 @@ public class AddCommitsToReview extends JDialog {
                 if (createNewReviewRdBttn.isSelected()){
                     refreshReviewsBttn.setEnabled(false);
                     existingReviewsLst.setEnabled(false);
-                    titleTxt.setEnabled(false);
+                    titleTxt.setEnabled(true);
                 }
                 else {
                     refreshReviewsBttn.setEnabled(true);
