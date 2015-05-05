@@ -91,8 +91,6 @@ public class ChangeListUtils {
                 versions.add(version);
 
                 if (scmRepoURL.equals("")) {
-                    VcsRoot vcsRoot = projectLevelVcsManager.getVcsRootObjectFor(change.getVirtualFile());
-
                     switch (scmToken) {
                         case SUBVERSION: // TODO: can probably get this in a less hacky way with svnkit, since we need that anyway now?
                             String fullPath = fileRevision.getChangedRepositoryPath().toPresentableString(); // this gives the full path down to the file, so:
@@ -101,6 +99,7 @@ public class ChangeListUtils {
                             }
                             break;
                         case GIT:
+                            VcsRoot vcsRoot = projectLevelVcsManager.getVcsRootObjectFor(change.getVirtualFile());
                             FileRepositoryBuilder builder = new FileRepositoryBuilder();
                             try {
                                 Repository gitRepo = builder.readEnvironment().findGitDir(new File(vcsRoot.getPath().getCanonicalPath())).build();
@@ -139,7 +138,6 @@ public class ChangeListUtils {
                     switch (scmToken) {
                         case SUBVERSION:
                             if (!scmRepoURL.equals("")) {
-                                SVNRepository repo = null;
                                 try {
                                     SVNURL svnURL = SVNURL.parseURIEncoded(scmRepoURL);
                                     SVNClientManager cm = SVNClientManager.newInstance();
