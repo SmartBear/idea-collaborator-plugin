@@ -136,8 +136,6 @@ public class ChangeListUtils {
 
                 }
                 if (scmRepoUUID.equals("")) {
-                    VcsRoot vcsRoot = projectLevelVcsManager.getVcsRootObjectFor(change.getVirtualFile());
-
                     switch (scmToken) {
                         case SUBVERSION:
                             if (!scmRepoURL.equals("")) {
@@ -156,6 +154,7 @@ public class ChangeListUtils {
                         case GIT: // for this, we use the sha1 of the first git commit in the project
                             FileRepositoryBuilder builder = new FileRepositoryBuilder();
                             try {
+                                VcsRoot vcsRoot = projectLevelVcsManager.getVcsRootObjectFor(change.getVirtualFile());
                                 Repository  gitRepo = builder.readEnvironment().findGitDir(new File(vcsRoot.getPath().getCanonicalPath())).build();
                                 Git git = new Git(gitRepo);
 
