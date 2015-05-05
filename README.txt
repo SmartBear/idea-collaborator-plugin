@@ -1,11 +1,11 @@
 SmartBear Collaborator IntelliJ Plugin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This plugin is designed to work with IDEA v14.
+This plugin is designed to work with IDEA v14, and supports creating (or adding to) reviews from git and svn commits.
 
-This plugin is based mostly in the open api provided by default in the IntelliJ Idea libraries,
-These libs include all the functionality required to access the SCM's included in the IDE such as Git, Subversion, etc.
-To interact with the Smartbear Collaborator Server the plugin uses Jersey 2.15 and Jackson 2.5.
+This plugin is based mostly on the open api provided by default in the IntelliJ Idea libraries, with third party
+libraries to handle a few of the smaller SCM interactions that IntelliJ does not handle natively.
+To interact with the Collaborator server the plugin uses Jersey 2.15 and Jackson 2.5.
 
 The plugin consists of 3 modules.
 client: the json-rpc interface.
@@ -38,3 +38,7 @@ Tested platforms:
     * Windows
     * Linux
     * OSX
+
+Authors:
+    * Miguel Zumbado
+    * Michael Jackson

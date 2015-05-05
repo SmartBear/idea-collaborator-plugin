@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>com.smartbear.collab.plugin</id>
   <name>SmartBear Collaborator</name>
-  <version>0.6</version>
+  <version>0.7</version>
   <vendor email="support@smartbear.com" url="http://www.smartbear.com">SmartBear</vendor>
 
   <description><![CDATA[
@@ -14,7 +14,7 @@
   </change-notes>
 
   <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="131"/>
+  <idea-version since-build="139"/>
 
   <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
        on how to target different products -->
@@ -36,7 +36,7 @@
 
   <actions>
     <!-- Add your actions here -->
-      <action id="reviewFromGitHistory" class="com.smartbear.collab.plugin.review.ReviewFromGitHistory"
+      <action id="reviewFromScmHistory" class="com.smartbear.collab.plugin.review.ReviewFromScmHistory"
               text="Add to review" description="Add to Collaborator review" icon="/icons/addrev_wiz.png">
           <add-to-group group-id="VcsHistoryActionsGroup" anchor="last"/>
       </action>

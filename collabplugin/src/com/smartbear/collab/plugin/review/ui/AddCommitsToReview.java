@@ -1,8 +1,7 @@
 package com.smartbear.collab.plugin.review.ui;
 
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.diff.DiffProvider;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.smartbear.collab.client.Client;
@@ -33,8 +32,9 @@ public class AddCommitsToReview extends JDialog {
     private Map<VcsFileRevision, CommittedChangeList> commits;
     private String rootDirectory;
     private ScmToken scmToken;
+    private Project projectRef;
 
-    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits, String rootDirectory, ScmToken scmToken) {
+    public AddCommitsToReview(Map<VcsFileRevision, CommittedChangeList> commits, String rootDirectory, ScmToken scmToken, Project project) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(cancelBttn);
@@ -43,6 +43,7 @@ public class AddCommitsToReview extends JDialog {
         this.commits = commits;
         this.rootDirectory = rootDirectory;
         this.scmToken = scmToken;
+        this.projectRef = project;
 
         initializeClient();
         initTextTitle(commits.keySet());
@@ -169,7 +170,7 @@ public class AddCommitsToReview extends JDialog {
         String reviewId = "";
         String reviewTitle = "";
         boolean zipFilesSent = true;
-        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(rootDirectory, scmToken, this.commits);
+        java.util.List<ChangeList> changeLists = ChangeListUtils.VcsFileRevisionToChangeList(rootDirectory, scmToken, this.commits, this.projectRef);
 
         if (createNewReviewRdBttn.isSelected()){
             if (titleTxt.getText() == null || titleTxt.getText().isEmpty()){
@@ -179,7 +180,7 @@ public class AddCommitsToReview extends JDialog {
                 String creator = persistedProperties.getValue(CollabConstants.PROPERTY_USERNAME);
                 try {
                     reviewTitle = titleTxt.getText();
-                    Map<String, byte[]> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()));
+                    Map<String, byte[]> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()), scmToken);
                     for (Map.Entry<String, byte[]> zip : zips.entrySet()){
                         zipFilesSent = zipFilesSent && client.sendZip(zip);
                     }
@@ -208,7 +209,7 @@ public class AddCommitsToReview extends JDialog {
                 String selectedReview = (String)existingReviewsLst.getSelectedValue();
                 reviewId = selectedReview.substring("Review #".length(), selectedReview.indexOf(':'));
                 reviewTitle = selectedReview.substring(selectedReview.indexOf(':') + 1);
-                Map<String, byte[]> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()));
+                Map<String, byte[]> zips = ChangeListUtils.getZipFiles(new ArrayList(commits.values()), scmToken);
                 for (Map.Entry<String, byte[]> zip : zips.entrySet()){
                     zipFilesSent = zipFilesSent && client.sendZip(zip);
                 }
@@ -242,18 +243,6 @@ public class AddCommitsToReview extends JDialog {
 
         }
     }
-    private String getReviewTitle(){
-        String result = "";
-        if (createNewReviewRdBttn.isSelected()){
-            if (titleTxt.getText().isEmpty()){
-                JOptionPane.showMessageDialog(null, "You must provide a title for the review", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            else {
-                result = titleTxt.getText();
-            }
-        }
-        return result;
-    }
 
     private void onCancel() {
         dispose();
@@ -271,8 +260,6 @@ public class AddCommitsToReview extends JDialog {
             dispose();
         }
         try {
-
-
             JsonrpcCommandResponse actionItems = client.getActionItems();
             java.util.List<LinkedHashMap<String, String>> aitems = (java.util.List)actionItems.getResult().getValue();
             DefaultListModel dlm = new DefaultListModel();
@@ -282,7 +269,7 @@ public class AddCommitsToReview extends JDialog {
             existingReviewsLst.setModel(dlm);
         }
         catch (Exception e){
-
+            JOptionPane.showMessageDialog(null, "Unable to refresh reviews: " + e.getMessage(), "Collaborator error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
