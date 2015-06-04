@@ -1,0 +1,18 @@
+Rough TODO
+~~~~~~~~~~
+
+major features:
+    * action item watcher (integrate w/ IDEA alert mechanism on AI state 
+        change, akin to current standalone tray program?)
+    * adding support for hg and p4 (the other two SCMs intellij supports OOTB)
+    * full review interface akin to eclipse plugin (this would be a much larger
+        undertaking than what presently exists, but is theoretically possible)
+    
+minor features:
+    * allow commit selection from SCM log, not just via file context menu
+    * script build so that it doesn't require manually doing so in IDEA?
+        (gradle?)
+
+known bugs:
+    * selection of multiple commits does not seem to work presently (0.7 beta)
+        (it makes multiple reviews and does not upload the commits to them)
