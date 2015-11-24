@@ -16,3 +16,5 @@ minor features:
 known bugs:
     * selection of multiple commits does not seem to work presently (0.7 beta)
         (it makes multiple reviews and does not upload the commits to them)
+
+Some more changes while playing with github integration
